@@ -1,0 +1,12 @@
+{
+    "schema_version": "1.0",
+    "name": "Sydasif Claude Code Plugins",
+    "description": "Collection of Claude Code plugins by Sydasif",
+    "plugins": [
+        {
+            "name": "code-review",
+            "description": "Semantic code review plugin for Claude Code with customizable project-specific rules",
+            "path": "."
+        }
+    ]
+}
