@@ -1,0 +1,60 @@
+{
+    "schema_version": "1.0",
+    "name": "code-review",
+    "version": "1.0.0",
+    "description": "Semantic code review plugin for Claude Code with customizable project-specific rules",
+    "commands": [
+        {
+            "name": "review",
+            "description": "Trigger a semantic code review manually",
+            "file": "commands/review.md"
+        }
+    ],
+    "agents": [
+        {
+            "name": "code-reviewer",
+            "file": "agents/code-reviewer.md"
+        }
+    ],
+    "settings": {
+        "codeReview": {
+            "enabled": true,
+            "fileExtensions": [
+                "py",
+                "ipynb"
+            ],
+            "rulesFile": ".claude/code-review/rules.md"
+        }
+    },
+    "requirements": [
+        "jq"
+    ],
+    "capabilities": [
+        "semantic_analysis",
+        "incremental_reviews",
+        "customizable_rules"
+    ],
+    "hooks": {
+        "PostToolUse": [
+            {
+                "matcher": "Write|Edit|MultiEdit",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "${CLAUDE_PLUGIN_ROOT}/hooks/tools/code-review-plugin.sh log"
+                    }
+                ]
+            }
+        ],
+        "Stop": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "${CLAUDE_PLUGIN_ROOT}/hooks/tools/code-review-plugin.sh review"
+                    }
+                ]
+            }
+        ]
+    }
+}
