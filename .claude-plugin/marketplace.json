@@ -1,16 +1,17 @@
 {
-    "schema_version": "1.0",
-    "name": "sydasif-claude-plugins",
-    "description": "Collection of Claude Code plugins by Sydasif",
-    "owner": {
-        "name": "sydasif"
-    },
-    "plugins": [
-        {
-            "name": "code-review",
-            "description": "Semantic code review plugin for Claude Code with customizable project-specific rules",
-            "version": "1.0.0",
-            "source": "./plugins/code-review"
-        }
-    ]
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "sydasif-claude-plugins",
+  "version": "1.0.0",
+  "description": "Collection of Claude Code plugins by Sydasif",
+  "owner": {
+    "name": "sydasif"
+  },
+  "plugins": [
+    {
+      "name": "code-review",
+      "description": "Semantic code review plugin for Claude Code with customizable project-specific rules",
+      "version": "1.0.0",
+      "source": "./plugins/code-review"
+    }
+  ]
 }
