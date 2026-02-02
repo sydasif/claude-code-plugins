@@ -1,32 +1,50 @@
-# Python Code Review
+# Claude Code Review Plugin
 
-When Claude has finished making changes to files, a code review is triggered. This plugin is pre-configured with Python best practices but can be customized for any project rules.
-
-When the plugin is enabled you will see the subagent activated when Claude has finished modifying files:
-
-```bash
-⏺ code-review:code-reviewer(Review modified files)
-```
+A semantic code review plugin for Claude Code that automatically reviews modified files using customizable project-specific rules.
 
 ## Features
 
-- **Semantic Analysis**: Checks for logic, style, and safety issues that linters miss.
-- **Incremental Reviews**: Only reviews files modified since the last review cycle.
-- **Python Focused**: Default rules enforce PEP 8, type hints, and Google-style docstrings.
+- **Automatic Reviews**: Triggers after Claude finishes modifying files
+- **Semantic Analysis**: Checks for logic, style, and safety issues that linters miss
+- **Incremental Reviews**: Only reviews files modified since the last review cycle  
+- **Customizable Rules**: Define your own semantic rules per project
+- **Multi-Language Support**: Configurable for any programming language
 
-## Setup
+## Installation
 
-**Auto-initializes on first hook run.**
+### Via Marketplace (Recommended)
 
-Creates/updates:
-- `.claude/settings.json` - Adds `codeReview` configuration
-- `.claude/code-review/rules.md` - Default Python semantic rules
+1. Add the plugin marketplace:
+   ```bash
+   /plugin marketplace add sydasif/claude-code-review
+   ```
 
-Customize `.claude/code-review/rules.md` to match your team's standards.
+2. Install the plugin:
+   ```bash
+   /plugin install code-review@sydasif-claude-plugins
+   ```
+
+### Manual Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/sydasif/claude-code-review ~/.claude/plugins/claude-code-review
+   ```
+
+2. Restart Claude Code to load the plugin.
+
+## How It Works
+
+The plugin uses Claude Code hooks to automatically trigger reviews:
+
+1. **PostToolUse Hook**: Logs file modifications to `/tmp/event-log-{SESSION_ID}.jsonl`
+2. **Stop Hook**: Checks for new files since last review and triggers the `code-reviewer` agent
+3. **Code Review Agent**: Enforces rules defined in the project's rules file
 
 ## Configuration
 
-Settings in `.claude/settings.json`:
+The plugin auto-initializes with default settings in `.claude/settings.json`:
+
 ```json
 {
   "codeReview": {
@@ -37,31 +55,68 @@ Settings in `.claude/settings.json`:
 }
 ```
 
-Set `"enabled": false` to disable for a specific project.
+### Settings
 
-## Default Rules
+- `enabled`: Enable/disable the plugin for the current project
+- `fileExtensions`: File types to review (add more extensions as needed)
+- `rulesFile`: Path to project-specific review rules
 
-The default configuration enforces:
-1. **Google-Style Docstrings** (Args/Returns/Raises)
-2. **Strict Type Hints** (No `Any` without reason)
-3. **No `print()`** (Use `logging`)
-4. **Explicit Exception Handling**
-5. **PEP 8 Naming Conventions**
+## Customization
 
-## How It Works
+### Changing File Extensions
 
-1. PostToolUse hook logs file modifications to `/tmp/event-log-{SESSION_ID}.jsonl`
-2. Stop hook checks for new files since last review
-3. Triggers `code-reviewer` agent with file list
-4. Agent reads rules from configured rulesFile and enforces them
+To review other file types, modify the `fileExtensions` array in `.claude/settings.json`:
+
+```json
+{
+  "codeReview": {
+    "enabled": true,
+    "fileExtensions": ["py", "js", "ts", "java", "cpp"],
+    "rulesFile": ".claude/code-review/rules.md"
+  }
+}
+```
+
+### Custom Rules
+
+The default rules (applied to Python files) are defined in `.claude/code-review/rules.md`. 
+Copy and customize them for your project needs.
+
+The default rules enforce:
+- Google-Style Docstrings (Args/Returns/Raises sections)
+- Strict Type Hints (No `Any` without reason)
+- No `print()` statements (Use `logging` instead)
+- Explicit Exception Handling
+- PEP 8 Naming Conventions
+
+### Manual Review
+
+Use the `/review` command to trigger a manual code review at any time.
 
 ## Requirements
 
-- `jq` - Install with `brew install jq` or `apt-get install jq`
+- `jq` command-line tool must be installed:
+  - macOS: `brew install jq`
+  - Ubuntu/Debian: `sudo apt-get install jq`
+  - Other systems: Install from your package manager or https://stedolan.github.io/jq/
 
-## Recommendations
+## Architecture
 
-This tool complements, rather than replaces, static analysis.
-1. Use **Ruff** or **Pylint** for deterministic formatting and linting.
-2. Use **Mypy** for strict type checking.
-3. Use this **Code Review** for semantic rules (e.g., "Docstrings must explain *why*, not just *what*", or "Variable names must be domain-specific").
+The plugin consists of:
+
+- **Hooks**: Event-triggered scripts that detect file changes
+- **Agent**: The `code-reviewer` agent that performs reviews using project rules
+- **Commands**: The `/review` command for manual reviews
+- **Rules**: Default semantic rules in `default-rules.md`
+
+## Best Practices
+
+This tool complements, rather than replaces, traditional static analysis:
+
+1. Use **Ruff**, **ESLint**, or **Pylint** for formatting and basic linting
+2. Use **Mypy** or **TypeScript** for type checking
+3. Use this **Code Review Plugin** for semantic rules (e.g., "Docstrings must explain *why*, not just *what*", or "Variable names must be domain-specific")
+
+## Contributing
+
+Feedback and contributions are welcome! Please open an issue or pull request on the GitHub repository.
