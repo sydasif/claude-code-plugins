@@ -121,6 +121,28 @@ Follow standard Python naming conventions to maintain idiomatic code.
 
 ---
 
+## Rule 6: Dependency and Execution Best Practices
+
+Always use modern, reproducible dependency management and execution patterns.
+
+❌ **Forbidden:**
+
+- Using `pip install` directly
+- Running Python scripts with `python script.py`
+- Using `pip` for project dependencies
+- Direct execution without proper environment isolation
+
+✅ **Required:**
+
+- Always use `uv` for dependency management (not pip)
+- Always use `uv run` to execute Python scripts and commands
+- For ad-hoc Python execution, use `uv run python -c "your code"`
+- Never use `pip install` or `python script.py` directly
+
+**Why:** Using `uv` ensures consistent, fast, and reproducible environments across all development machines and CI/CD pipelines.
+
+---
+
 ## Review Procedure
 
 For each file:
