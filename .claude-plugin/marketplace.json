@@ -10,7 +10,7 @@
             "name": "code-review",
             "description": "Semantic code review plugin for Claude Code with customizable project-specific rules",
             "version": "1.0.0",
-            "source": "."
+            "source": "./plugins/code-review"
         }
     ]
 }
