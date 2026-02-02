@@ -6,7 +6,7 @@ A semantic code review plugin for Claude Code that automatically reviews modifie
 
 - **Automatic Reviews**: Triggers after Claude finishes modifying files
 - **Semantic Analysis**: Checks for logic, style, and safety issues that linters miss
-- **Incremental Reviews**: Only reviews files modified since the last review cycle  
+- **Incremental Reviews**: Only reviews files modified since the last review cycle
 - **Customizable Rules**: Define your own semantic rules per project
 - **Multi-Language Support**: Configurable for any programming language
 
@@ -15,11 +15,13 @@ A semantic code review plugin for Claude Code that automatically reviews modifie
 ### Via Marketplace (Recommended)
 
 1. Add the plugin marketplace:
+
    ```bash
    /plugin marketplace add sydasif/claude-code-review
    ```
 
 2. Install the plugin:
+
    ```bash
    /plugin install code-review@sydasif-claude-plugins
    ```
@@ -27,6 +29,7 @@ A semantic code review plugin for Claude Code that automatically reviews modifie
 ### Manual Installation
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/sydasif/claude-code-review ~/.claude/plugins/claude-code-review
    ```
@@ -79,10 +82,11 @@ To review other file types, modify the `fileExtensions` array in `.claude/settin
 
 ### Custom Rules
 
-The default rules (applied to Python files) are defined in `.claude/code-review/rules.md`. 
+The default rules (applied to Python files) are defined in `.claude/code-review/rules.md`.
 Copy and customize them for your project needs.
 
 The default rules enforce:
+
 - Google-Style Docstrings (Args/Returns/Raises sections)
 - Strict Type Hints (No `Any` without reason)
 - No `print()` statements (Use `logging` instead)
@@ -98,7 +102,7 @@ Use the `/review` command to trigger a manual code review at any time.
 - `jq` command-line tool must be installed:
   - macOS: `brew install jq`
   - Ubuntu/Debian: `sudo apt-get install jq`
-  - Other systems: Install from your package manager or https://stedolan.github.io/jq/
+  - Other systems: Install from your package manager or <https://stedolan.github.io/jq/>
 
 ## Architecture
 
