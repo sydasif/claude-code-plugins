@@ -53,7 +53,7 @@ The plugin auto-initializes with default settings in `.claude/settings.json`:
   "codeReview": {
     "enabled": true,
     "fileExtensions": ["py", "ipynb"],
-    "rulesFile": ".claude/code-review/rules.md"
+    "rulesFile": "${CLAUDE_PLUGIN_ROOT}/rules.md"
   }
 }
 ```
@@ -62,7 +62,7 @@ The plugin auto-initializes with default settings in `.claude/settings.json`:
 
 - `enabled`: Enable/disable the plugin for the current project
 - `fileExtensions`: File types to review (add more extensions as needed)
-- `rulesFile`: Path to project-specific review rules
+- `rulesFile`: Path to project-specific review rules (default: `${CLAUDE_PLUGIN_ROOT}/rules.md`)
 
 ## Customization
 
@@ -75,14 +75,14 @@ To review other file types, modify the `fileExtensions` array in `.claude/settin
   "codeReview": {
     "enabled": true,
     "fileExtensions": ["py", "js", "ts", "java", "cpp"],
-    "rulesFile": ".claude/code-review/rules.md"
+    "rulesFile": "${CLAUDE_PLUGIN_ROOT}/rules.md"
   }
 }
 ```
 
 ### Custom Rules
 
-The default rules (applied to Python files) are defined in `.claude/code-review/rules.md`.
+The default rules (applied to Python files) are defined in `${CLAUDE_PLUGIN_ROOT}/rules.md`.
 Copy and customize them for your project needs.
 
 The default rules enforce:
@@ -111,7 +111,7 @@ The plugin consists of:
 - **Hooks**: Event-triggered scripts that detect file changes
 - **Agent**: The `code-reviewer` agent that performs reviews using project rules
 - **Commands**: The `/review` command for manual reviews
-- **Rules**: Default semantic rules in `default-rules.md`
+- **Rules**: Default semantic rules in `rules.md`
 
 ## Best Practices
 

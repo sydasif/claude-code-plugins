@@ -120,7 +120,7 @@ get_or_initialize_plugin_settings() {
   local session_id="$1"
 
   local settings_file=".claude/settings.json"
-  local rules_file=".claude/code-review/rules.md"
+  local rules_file="${CLAUDE_PLUGIN_ROOT}/rules.md"
 
   if [[ ! -f "$settings_file" ]] || ! jq -e '.codeReview' "$settings_file" >/dev/null 2>&1; then
     local init_flag="/tmp/code-review-initialized-${session_id}"
@@ -134,16 +134,16 @@ get_or_initialize_plugin_settings() {
         existing="{}"
       fi
 
-      echo "$existing" | jq '.codeReview = {"enabled": true, "fileExtensions": ["py"], "rulesFile": ".claude/code-review/rules.md"}' > "$settings_file"
+      echo "$existing" | jq '.codeReview = {"enabled": true, "fileExtensions": ["py"], "rulesFile": "${CLAUDE_PLUGIN_ROOT}/rules.md"}' > "$settings_file"
 
       if [[ ! -f "$rules_file" ]]; then
-        cp "${CLAUDE_PLUGIN_ROOT}/default-rules.md" "$rules_file" 2>/dev/null || true
+        cp "${CLAUDE_PLUGIN_ROOT}/rules.md" "$rules_file" 2>/dev/null || true
       fi
 
       echo "✅ code-review plugin initialized!" >&2
       echo "   Updated: .claude/settings.json" >&2
-      echo "   Created: .claude/code-review/rules.md (default rules)" >&2
-      echo "   Customize .claude/code-review/rules.md for your project." >&2
+      echo "   Created: ${CLAUDE_PLUGIN_ROOT}/rules.md (default rules)" >&2
+      echo "   Customize ${CLAUDE_PLUGIN_ROOT}/rules.md for your project." >&2
 
       touch "$init_flag"
     fi
