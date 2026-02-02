@@ -1,12 +1,16 @@
 {
     "schema_version": "1.0",
-    "name": "Sydasif Claude Code Plugins",
+    "name": "sydasif-claude-plugins",
     "description": "Collection of Claude Code plugins by Sydasif",
+    "owner": {
+        "name": "sydasif"
+    },
     "plugins": [
         {
             "name": "code-review",
             "description": "Semantic code review plugin for Claude Code with customizable project-specific rules",
-            "path": "."
+            "version": "1.0.0",
+            "source": "."
         }
     ]
 }
