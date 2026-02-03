@@ -4,7 +4,7 @@ set -euo pipefail
 if ! command -v jq >/dev/null 2>&1; then
   echo "ERROR: jq is required but not installed." >&2
   echo "Install with: brew install jq (macOS) or apt-get install jq (Linux)" >&2
-  exit 0
+  exit 1
 fi
 
 COMMAND="${1:-}"
@@ -23,7 +23,9 @@ log_event() {
   local event_type="$2"
   shift 2
 
-  local log_file="/tmp/event-log-${session_id}.jsonl"
+  local log_dir=".claude/code-review"
+  mkdir -p "$log_dir"
+  local log_file="${log_dir}/event-log.jsonl"
   touch "$log_file"
 
   local event_json
@@ -58,7 +60,7 @@ log_event() {
 
 has_new_files() {
   local session_id="$1"
-  local log_file="/tmp/event-log-${session_id}.jsonl"
+  local log_file=".claude/code-review/event-log.jsonl"
 
   [[ ! -f "$log_file" ]] && return 1
 
@@ -87,7 +89,7 @@ has_new_files() {
 
 get_modified_files() {
   local session_id="$1"
-  local log_file="/tmp/event-log-${session_id}.jsonl"
+  local log_file=".claude/code-review/event-log.jsonl"
 
   [[ ! -f "$log_file" ]] && echo "[]" && return
 
@@ -119,8 +121,9 @@ get_modified_files() {
 get_or_initialize_plugin_settings() {
   local session_id="$1"
 
+  local plugin_root="${CLAUDE_PLUGIN_ROOT:-$(pwd)/plugins/code-review}"
   local settings_file=".claude/settings.json"
-  local rules_file="${CLAUDE_PLUGIN_ROOT}/rules.md"
+  local rules_file="${plugin_root}/rules.md"
 
   if [[ ! -f "$settings_file" ]] || ! jq -e '.codeReview' "$settings_file" >/dev/null 2>&1; then
     local init_flag="/tmp/code-review-initialized-${session_id}"
@@ -134,10 +137,11 @@ get_or_initialize_plugin_settings() {
         existing="{}"
       fi
 
-      echo "$existing" | jq '.codeReview = {"enabled": true, "fileExtensions": ["py"], "rulesFile": "${CLAUDE_PLUGIN_ROOT}/rules.md"}' > "$settings_file"
+      local rules_path="${plugin_root}/rules.md"
+      echo "$existing" | jq --arg rp "$rules_path" '.codeReview = {"enabled": true, "fileExtensions": ["py", "js", "ts", "md", "sh"], "rulesFile": $rp}' > "$settings_file"
 
       if [[ ! -f "$rules_file" ]]; then
-        cp "${CLAUDE_PLUGIN_ROOT}/rules.md" "$rules_file" 2>/dev/null || true
+        cp "${plugin_root}/rules.md" "$rules_file" 2>/dev/null || true
       fi
 
       echo "✅ code-review plugin initialized!" >&2

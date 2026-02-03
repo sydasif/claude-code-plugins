@@ -4,7 +4,7 @@ A semantic code review plugin for Claude Code that automatically reviews modifie
 
 ## Features
 
-- **Automatic Reviews**: Triggers after Claude finishes modifying files
+- **Manual Reviews**: Triggers via the `/review` command after Claude finishes modifying files
 - **Semantic Analysis**: Checks for logic, style, and safety issues that linters miss
 - **Incremental Reviews**: Only reviews files modified since the last review cycle
 - **Customizable Rules**: Define your own semantic rules per project
@@ -38,10 +38,10 @@ A semantic code review plugin for Claude Code that automatically reviews modifie
 
 ## How It Works
 
-The plugin uses Claude Code hooks to automatically trigger reviews:
+The plugin uses Claude Code hooks to log file changes and provides a command for manual review:
 
-1. **PostToolUse Hook**: Logs file modifications to `/tmp/event-log-{SESSION_ID}.jsonl`
-2. **Stop Hook**: Checks for new files since last review and triggers the `code-reviewer` agent
+1. **PostToolUse Hook**: Logs file modifications to `.claude/code-review/event-log.jsonl`
+2. **Review Command**: Run `/review` to check for new files since last review and trigger the `code-reviewer` agent
 3. **Code Review Agent**: Enforces rules defined in the project's rules file
 
 ## Configuration
@@ -93,9 +93,9 @@ The default rules enforce:
 - Explicit Exception Handling
 - PEP 8 Naming Conventions
 
-### Manual Review
+### Manual Review (Primary)
 
-Use the `/review` command to trigger a manual code review at any time.
+Use the `/review` command to trigger a code review. The plugin will automatically identify which files have been modified since your last review and focus only on those.
 
 ## Requirements
 
