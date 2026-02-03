@@ -81,8 +81,9 @@ fi
 ```
 
 Variables set:
+
 - `GENERATE_REPORT`: true if `--report` present
-- `CREATE_ISSUE`: true if `--issue` present  
+- `CREATE_ISSUE`: true if `--issue` present
 - `SCOPE_PATH`: value after `--scope` or defaults to "."
 
 ### Step 2: Read Configuration
@@ -93,7 +94,7 @@ Read `.claude/settings.json` to get configured file extensions:
 Use Read tool on: .claude/settings.json
 ```
 
-Extract `fileExtensions` array from `.codeReview` section. If not found or settings file doesn't exist, use defaults: `["py", "js", "ts", "md", "sh"]`.
+Extract `fileExtensions` array from `.codeReview` section. If not found or settings file doesn't exist, use defaults: `["py", "js", "ts"]`.
 
 ### Step 3: Discover Files
 
@@ -106,6 +107,7 @@ Pattern: **/*.{ext1,ext2,ext3,...}
 Example: If extensions are `["py", "js", "ts"]`, use pattern `**/*.{py,js,ts}`
 
 Edge case handling:
+
 - If fileExtensions array is empty [], exit gracefully with message "No matching files found for extensions []"
 - If fileExtensions has only one element like ["py"], the pattern should be **/*.py (not **/*.{py})
 

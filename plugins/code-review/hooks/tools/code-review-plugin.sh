@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Exit codes
-readonly EXIT_REVIEW_REQUIRED=2
-
 if ! command -v jq >/dev/null 2>&1; then
   echo "ERROR: jq is required but not installed." >&2
   echo "Install with: brew install jq (macOS) or apt-get install jq (Linux)" >&2
@@ -13,7 +10,7 @@ fi
 COMMAND="${1:-}"
 
 if [[ -z "$COMMAND" ]]; then
-  echo "Usage: $0 {log|review}" >&2
+  echo "Usage: $0 {log}" >&2
   exit 1
 fi
 
@@ -48,15 +45,6 @@ log_event() {
         '{timestamp: $ts, event: $event, file: $file, tool: $tool}')
       ;;
 
-    review_triggered)
-      local files="$1"
-      event_json=$(jq -nc \
-        --arg ts "$(timestamp)" \
-        --arg event "$event_type" \
-        --argjson files "$files" \
-        '{timestamp: $ts, event: $event, files: $files}')
-      ;;
-
     *)
       return 1
       ;;
@@ -66,66 +54,6 @@ log_event() {
     flock -x 200
     echo "$event_json" >> "$log_file"
   ) 200>"${log_file}.lock"
-}
-
-has_new_files() {
-  local session_id="$1"
-  local log_file="$(get_project_root)/.claude/code-review/event-log.jsonl"
-
-  [[ ! -f "$log_file" ]] && return 1
-
-  local last_idx=-1
-  local idx=0
-
-  while IFS= read -r line; do
-    if [[ -n "$line" ]] && echo "$line" | jq -e '.event == "review_triggered"' >/dev/null 2>&1; then
-      last_idx=$idx
-    fi
-    ((idx++)) || true
-  done < "$log_file"
-
-  idx=0
-  while IFS= read -r line; do
-    if [[ $idx -gt $last_idx ]] && [[ -n "$line" ]]; then
-      if echo "$line" | jq -e '.event == "file_modified"' >/dev/null 2>&1; then
-        return 0
-      fi
-    fi
-    ((idx++)) || true
-  done < "$log_file"
-
-  return 1
-}
-
-get_modified_files() {
-  local session_id="$1"
-  local log_file="$(get_project_root)/.claude/code-review/event-log.jsonl"
-
-  [[ ! -f "$log_file" ]] && echo "[]" && return
-
-  local last_idx=-1
-  local idx=0
-
-  while IFS= read -r line; do
-    if [[ -n "$line" ]] && echo "$line" | jq -e '.event == "review_triggered"' >/dev/null 2>&1; then
-      last_idx=$idx
-    fi
-    ((idx++)) || true
-  done < "$log_file"
-
-  local -a files=()
-  idx=0
-  while IFS= read -r line; do
-    if [[ $idx -gt $last_idx ]] && [[ -n "$line" ]]; then
-      if echo "$line" | jq -e '.event == "file_modified"' >/dev/null 2>&1; then
-        local file=$(echo "$line" | jq -r '.file')
-        files+=("$file")
-      fi
-    fi
-    ((idx++)) || true
-  done < "$log_file"
-
-  printf '%s\n' "${files[@]}" | sort -u | jq -R . | jq -s .
 }
 
 get_or_initialize_plugin_settings() {
@@ -226,8 +154,12 @@ get_language_from_extension() {
     cpp|cxx|cc) echo "cpp" ;;
     go) echo "go" ;;
     rs) echo "rust" ;;
+    cs) echo "csharp" ;;
     php) echo "php" ;;
     rb) echo "ruby" ;;
+    swift) echo "swift" ;;
+    kt|kts) echo "kotlin" ;;
+    dart) echo "dart" ;;
     *) echo "unknown" ;;
   esac
 }
@@ -276,81 +208,11 @@ cmd_log() {
   exit 0
 }
 
-cmd_review() {
-  INPUT=$(cat)
-  SESSION_ID=$(echo "$INPUT" | jq -r '.session_id // ""')
-
-  if [[ -z "$SESSION_ID" ]]; then
-    echo "Warning: No session ID provided for review command, skipping" >&2
-    exit 0
-  fi
-
-  SETTINGS=$(get_or_initialize_plugin_settings "$SESSION_ID")
-  ENABLED=$(echo "$SETTINGS" | jq -r '.enabled // true')
-
-  [[ "$ENABLED" != "true" ]] && exit 0
-
-  if ! has_new_files "$SESSION_ID"; then
-    exit 0
-  fi
-
-  FILES_JSON=$(get_modified_files "$SESSION_ID")
-  FILE_COUNT=$(echo "$FILES_JSON" | jq 'length' 2>/dev/null || echo "0")
-
-  if [[ "$FILE_COUNT" -eq 0 ]]; then
-    exit 0
-  fi
-
-  log_event "$SESSION_ID" review_triggered "$FILES_JSON" || true
-
-  FILES_LIST=$(echo "$FILES_JSON" | jq -r '.[] | "- " + .' 2>/dev/null || echo "")
-
-  cat >&2 <<EOF
-📋 CODE REVIEW REQUIRED
-
-Files modified since last review:
-$FILES_LIST
-
-INSTRUCTION: Use the Task tool with subagent_type "code-reviewer". Pass only the file list as the prompt. The agent will follow its configured review procedure.
-
-After receiving review results:
-1. Show all findings to the user
-2. Evaluate each finding against ONE heuristic: "What results in highest quality code?"
-
-   The ONLY valid reasons to skip feedback:
-   - IMPOSSIBLE: You tried to fix it and cannot satisfy the feedback, product requirements, lint rules, AND test coverage simultaneously. You must have actually attempted the fix.
-   - CONFLICTS WITH REQUIREMENTS: The feedback directly contradicts explicit product requirements
-   - MAKES CODE WORSE: Applying the feedback would genuinely degrade code quality
-
-   NEVER VALID (reject these excuses from yourself):
-   - "Too much time" / "too complex" → not your call, do the work
-   - "Out of scope" → if you touched the code, it's in scope
-   - "Inconsistent with existing code" → fix the existing code too
-   - "Pre-existing code" / "didn't write this" → present value/effort, let user decide
-   - "Only renamed/moved" → touching a file puts it in scope
-   - "Would require large refactor" → present value/effort, let user decide
-   - Any argument that results in lower quality code
-
-3. For each finding:
-   - NO VALID SKIP REASON → fix it
-   - VALID SKIP REASON → skip it, cite which reason + specific justification
-   - UNCERTAIN → ASK the user
-4. Summarize: what was fixed, what was skipped (and why), what needs user decision
-
-Default to fixing. When in doubt, ask the user.
-EOF
-
-  echo "$FILES_LIST"
-
-  exit $EXIT_REVIEW_REQUIRED
-}
-
 case "$COMMAND" in
   log) cmd_log ;;
-  review) cmd_review ;;
   *)
     echo "Error: unknown command: $COMMAND" >&2
-    echo "Usage: $0 {log|review}" >&2
+    echo "Usage: $0 {log}" >&2
     exit 1
     ;;
 esac
