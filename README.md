@@ -53,7 +53,7 @@ The plugin auto-initializes with default settings in `.claude/settings.json`:
 {
   "codeReview": {
     "enabled": true,
-    "fileExtensions": ["py", "js", "ts", "md", "sh"],
+    "fileExtensions": ["py", "js", "go", "rs", "cs"],
     "rulesFile": "${CLAUDE_PLUGIN_ROOT}/rules.md"
   }
 }
@@ -75,7 +75,7 @@ To review other file types, modify the `fileExtensions` array in `.claude/settin
 {
   "codeReview": {
     "enabled": true,
-    "fileExtensions": ["py", "js", "ts", "java", "cpp"],
+    "fileExtensions": ["py", "js", "go", "rs", "cs"],
     "rulesFile": "${CLAUDE_PLUGIN_ROOT}/rules.md"
   }
 }
@@ -102,17 +102,9 @@ The plugin currently supports language-specific rules for:
 
 - Python (`.py`)
 - JavaScript (`.js`)
-- TypeScript (`.ts`, `.tsx`)
-- Java (`.java`)
 - Go (`.go`)
-- C# (`.cs`)
-- C++ (`.cpp`, `.cxx`, `.cc`)
-- PHP (`.php`)
-- Ruby (`.rb`)
-- Swift (`.swift`)
-- Kotlin (`.kt`)
 - Rust (`.rs`)
-- Dart (`.dart`)
+- C# (`.cs`)
 
 #### Configuration
 
@@ -125,34 +117,17 @@ Language-specific rules are configured in `.claude/settings.json`:
     "fileExtensions": [
       "py",
       "js",
-      "ts",
-      "tsx",
-      "java",
-      "cpp",
       "go",
-      "cs",
-      "php",
-      "rb",
-      "swift",
-      "kt",
       "rs",
-      "dart"
+      "cs"
     ],
     "rulesFile": "./plugins/code-review/rules.md",
     "languageSpecificRules": {
       "python": "./plugins/code-review/rules/python-rules.md",
       "javascript": "./plugins/code-review/rules/javascript-rules.md",
-      "typescript": "./plugins/code-review/rules/typescript-rules.md",
-      "java": "./plugins/code-review/rules/java-rules.md",
       "go": "./plugins/code-review/rules/go-rules.md",
-      "csharp": "./plugins/code-review/rules/csharp-rules.md",
-      "cpp": "./plugins/code-review/rules/cpp-rules.md",
-      "php": "./plugins/code-review/rules/php-rules.md",
-      "ruby": "./plugins/code-review/rules/ruby-rules.md",
-      "swift": "./plugins/code-review/rules/swift-rules.md",
-      "kotlin": "./plugins/code-review/rules/kotlin-rules.md",
       "rust": "./plugins/code-review/rules/rust-rules.md",
-      "dart": "./plugins/code-review/rules/dart-rules.md"
+      "csharp": "./plugins/code-review/rules/csharp-rules.md"
     }
   }
 }

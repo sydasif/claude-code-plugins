@@ -80,36 +80,20 @@ get_or_initialize_plugin_settings() {
         --arg rp "$rules_path" \
         --arg pypath "${plugin_root}/rules/python-rules.md" \
         --arg jspath "${plugin_root}/rules/javascript-rules.md" \
-        --arg tspath "${plugin_root}/rules/typescript-rules.md" \
-        --arg javapath "${plugin_root}/rules/java-rules.md" \
         --arg gopath "${plugin_root}/rules/go-rules.md" \
-        --arg cpcpath "${plugin_root}/rules/cpp-rules.md" \
-        --arg csharppath "${plugin_root}/rules/csharp-rules.md" \
-        --arg phppath "${plugin_root}/rules/php-rules.md" \
-        --arg rubypath "${plugin_root}/rules/ruby-rules.md" \
-        --arg swiftpath "${plugin_root}/rules/swift-rules.md" \
-        --arg kotlinpath "${plugin_root}/rules/kotlin-rules.md" \
         --arg rustpath "${plugin_root}/rules/rust-rules.md" \
-        --arg dartpath "${plugin_root}/rules/dart-rules.md" \
+        --arg csharppath "${plugin_root}/rules/csharp-rules.md" \
         '
         .codeReview = {
           "enabled": true,
-          "fileExtensions": ["py", "js", "ts", "java", "cpp", "go", "cs", "php", "rb", "swift", "kt", "rs", "dart", "md", "sh"],
+          "fileExtensions": ["py", "js", "go", "rs", "cs"],
           "rulesFile": $rp,
           "languageSpecificRules": {
             "python": $pypath,
             "javascript": $jspath,
-            "typescript": $tspath,
-            "java": $javapath,
             "go": $gopath,
-            "cpp": $cpcpath,
-            "csharp": $csharppath,
-            "php": $phppath,
-            "ruby": $rubypath,
-            "swift": $swiftpath,
-            "kotlin": $kotlinpath,
             "rust": $rustpath,
-            "dart": $dartpath
+            "csharp": $csharppath
           }
         }
       ' > "$settings_file"
@@ -149,17 +133,9 @@ get_language_from_extension() {
   case "$extension" in
     py) echo "python" ;;
     js) echo "javascript" ;;
-    ts|tsx) echo "typescript" ;;
-    java) echo "java" ;;
-    cpp|cxx|cc) echo "cpp" ;;
     go) echo "go" ;;
     rs) echo "rust" ;;
     cs) echo "csharp" ;;
-    php) echo "php" ;;
-    rb) echo "ruby" ;;
-    swift) echo "swift" ;;
-    kt|kts) echo "kotlin" ;;
-    dart) echo "dart" ;;
     *) echo "unknown" ;;
   esac
 }

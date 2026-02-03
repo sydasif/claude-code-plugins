@@ -17,7 +17,7 @@ Read `.claude/settings.json` to get configured file extensions:
 Use Read tool on: .claude/settings.json
 ```
 
-Extract `fileExtensions` array from `.codeReview` section. If not found or settings file doesn't exist, use defaults: `["py", "js", "ts"]`.
+Extract `fileExtensions` array from `.codeReview` section. If not found or settings file doesn't exist, use defaults: `["py", "js", "go", "rs", "cs"]`.
 
 ### Step 2: Discover Files
 
@@ -27,7 +27,7 @@ Build glob pattern from configured extensions:
 Pattern: **/*.{ext1,ext2,ext3,...}
 ```
 
-Example: If extensions are `["py", "js", "ts"]`, use pattern `**/*.{py,js,ts}`
+Example: If extensions are `["py", "js", "go", "rs", "cs"]`, use pattern `**/*.{py,js,go,rs,cs}`
 
 Edge case handling:
 
@@ -136,7 +136,7 @@ Always display a summary to the user:
 - If rules file not found: Warn but continue with basic review (code-reviewer agent handles this)
 - If chunk review fails: Log error, continue with remaining chunks
 - If `gh` not installed: Warn and skip issue creation
-- If `.claude/settings.json` not found: Use default extensions ["py", "js", "ts", "md", "sh"]
+- If `.claude/settings.json` not found: Use default extensions ["py", "js", "go", "rs", "cs"]
 
 ## Notes
 
@@ -144,4 +144,4 @@ Always display a summary to the user:
 - Uses language-specific rules based on file extensions and configuration in `.claude/settings.json`.
 - Ensuring appropriate rules are applied to each file type
 - Respects `fileExtensions` configuration from `.claude/settings.json`
-- Supports any programming language configured in `fileExtensions` (Python, JavaScript, TypeScript, etc.)
+- Supports any programming language configured in `fileExtensions` (Python, JavaScript, Go, Rust, C#)

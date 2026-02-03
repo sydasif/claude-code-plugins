@@ -12,15 +12,11 @@ BEFORE reviewing any files, you MUST:
 
 1. **Read Configuration**: Read `.claude/settings.json` from the project root.
 2. **Load Rules Cache**: Read the configuration and cache all necessary rules files based on the language-specific configuration. The following mapping will be used:
-   - `.py` → Python
-   - `.js` → JavaScript
-   - `.ts`, `.tsx` → TypeScript
-   - `.java` → Java
-   - `.cpp`, `.cxx`, `.cc` → C++
-   - `.go` → Go
-   - `.rs` → Rust
-   - `.php` → PHP
-   - `.rb` → Ruby
+    - `.py` → Python
+    - `.js` → JavaScript
+    - `.go` → Go
+    - `.rs` → Rust
+    - `.cs` → C#
 3. **Prepare Language-Rules Mapping**: For each file being reviewed, determine the appropriate rules by:
    - Extracting the file extension and mapping to programming language
    - Using the cached language-specific rules from the configuration
