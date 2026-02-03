@@ -148,16 +148,40 @@ get_or_initialize_plugin_settings() {
       fi
 
       local rules_path="${plugin_root}/rules.md"
-      echo "$existing" | jq --arg rp "$rules_path" --arg pypath "${plugin_root}/rules/python-rules.md" --arg jspath "${plugin_root}/rules/javascript-rules.md" --arg tspath "${plugin_root}/rules/typescript-rules.md" --arg javapath "${plugin_root}/rules/java-rules.md" '
+      echo "$existing" | jq \
+        --arg rp "$rules_path" \
+        --arg pypath "${plugin_root}/rules/python-rules.md" \
+        --arg jspath "${plugin_root}/rules/javascript-rules.md" \
+        --arg tspath "${plugin_root}/rules/typescript-rules.md" \
+        --arg javapath "${plugin_root}/rules/java-rules.md" \
+        --arg gopath "${plugin_root}/rules/go-rules.md" \
+        --arg cpcpath "${plugin_root}/rules/cpp-rules.md" \
+        --arg csharppath "${plugin_root}/rules/csharp-rules.md" \
+        --arg phppath "${plugin_root}/rules/php-rules.md" \
+        --arg rubypath "${plugin_root}/rules/ruby-rules.md" \
+        --arg swiftpath "${plugin_root}/rules/swift-rules.md" \
+        --arg kotlinpath "${plugin_root}/rules/kotlin-rules.md" \
+        --arg rustpath "${plugin_root}/rules/rust-rules.md" \
+        --arg dartpath "${plugin_root}/rules/dart-rules.md" \
+        '
         .codeReview = {
           "enabled": true,
-          "fileExtensions": ["py", "js", "ts", "java", "cpp", "md", "sh"],
+          "fileExtensions": ["py", "js", "ts", "java", "cpp", "go", "cs", "php", "rb", "swift", "kt", "rs", "dart", "md", "sh"],
           "rulesFile": $rp,
           "languageSpecificRules": {
             "python": $pypath,
             "javascript": $jspath,
             "typescript": $tspath,
-            "java": $javapath
+            "java": $javapath,
+            "go": $gopath,
+            "cpp": $cpcpath,
+            "csharp": $csharppath,
+            "php": $phppath,
+            "ruby": $rubypath,
+            "swift": $swiftpath,
+            "kotlin": $kotlinpath,
+            "rust": $rustpath,
+            "dart": $dartpath
           }
         }
       ' > "$settings_file"
@@ -167,18 +191,15 @@ get_or_initialize_plugin_settings() {
       fi
 
       # Create language-specific rules files if they don't exist
-      if [[ -f "$(dirname "$0")/../rules/python-rules.md" ]]; then
-        [[ ! -f "${plugin_root}/rules/python-rules.md" ]] && cp "$(dirname "$0")/../rules/python-rules.md" "${plugin_root}/rules/python-rules.md" 2>/dev/null || true
-      fi
-      if [[ -f "$(dirname "$0")/../rules/javascript-rules.md" ]]; then
-        [[ ! -f "${plugin_root}/rules/javascript-rules.md" ]] && cp "$(dirname "$0")/../rules/javascript-rules.md" "${plugin_root}/rules/javascript-rules.md" 2>/dev/null || true
-      fi
-      if [[ -f "$(dirname "$0")/../rules/typescript-rules.md" ]]; then
-        [[ ! -f "${plugin_root}/rules/typescript-rules.md" ]] && cp "$(dirname "$0")/../rules/typescript-rules.md" "${plugin_root}/rules/typescript-rules.md" 2>/dev/null || true
-      fi
-      if [[ -f "$(dirname "$0")/../rules/java-rules.md" ]]; then
-        [[ ! -f "${plugin_root}/rules/java-rules.md" ]] && cp "$(dirname "$0")/../rules/java-rules.md" "${plugin_root}/rules/java-rules.md" 2>/dev/null || true
-      fi
+      local rules_src_dir="$(dirname "$0")/../rules"
+      local rules_dest_dir="${plugin_root}/rules"
+      
+      for lang_file in "${rules_src_dir}"/*-rules.md; do
+        if [[ -f "$lang_file" ]]; then
+          local dest_file="${rules_dest_dir}/$(basename "$lang_file")"
+          [[ ! -f "$dest_file" ]] && cp "$lang_file" "$dest_file" 2>/dev/null || true
+        fi
+      done
 
       echo "✅ code-review plugin initialized!" >&2
       echo "   Updated: .claude/settings.json" >&2
