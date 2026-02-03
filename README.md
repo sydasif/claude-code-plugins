@@ -91,7 +91,7 @@ Run reviews directly from the Claude Code prompt:
 
 We welcome contributions! To add official support for a new language:
 
-1. **Fork** the repository: `git clone https://github.com/YOUR_USERNAME/claude-code-review.git`
+1. **Fork** the repository: `git clone https://github.com/YOUR_USERNAME/claude-code-plugins.git`
 2. **Implement** support in:
    - `plugins/code-review/rules/yourlang-rules.md`
    - `plugins/code-review/hooks/tools/code-review-plugin.sh`
