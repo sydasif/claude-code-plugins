@@ -1,12 +1,12 @@
 ---
 argument-hint: [--report] [--issue] [--scope <path>]
-description: Run full codebase review using automatic-code-review rules
+description: Run full codebase review using code-reviewer agent with project-specific rules
 allowed-tools: Glob, Read, Write, Bash, Task
 ---
 
 # Full Codebase Review
 
-Review the entire codebase against `.claude/code-review/rules.md` - the same rules used for automatic code review on modified files, but applied to everything.
+Review the entire codebase against `${CLAUDE_PLUGIN_ROOT}/rules.md` - the same rules used for automatic code review on modified files, but applied to everything.
 
 ## Arguments
 
@@ -14,38 +14,79 @@ Review the entire codebase against `.claude/code-review/rules.md` - the same rul
 - `--issue`: Create GitHub issue with findings summary
 - `--scope <path>`: Limit to specific path (default: entire codebase)
 
-Parse these from `$ARGUMENTS`.
-
 ## Procedure
 
 ### Step 1: Parse Arguments
 
-```text
-ARGUMENTS: $ARGUMENTS
+Parse `$ARGUMENTS` using Bash:
+
+```bash
+# Initialize variables
+GENERATE_REPORT=false
+CREATE_ISSUE=false
+SCOPE_PATH="."
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --report)
+      GENERATE_REPORT=true
+      shift
+      ;;
+    --issue)
+      CREATE_ISSUE=true
+      shift
+      ;;
+    --scope)
+      if [[ -n "$2" && "$2" != --* ]]; then
+        SCOPE_PATH="$2"
+        shift 2
+      else
+        echo "Error: --scope requires a path argument" >&2
+        exit 1
+      fi
+      ;;
+    *)
+      echo "Warning: Unknown argument: $1" >&2
+      shift
+      ;;
+  esac
+done
 ```
 
-Extract:
+Variables set:
+- `GENERATE_REPORT`: true if `--report` present
+- `CREATE_ISSUE`: true if `--issue` present  
+- `SCOPE_PATH`: value after `--scope` or defaults to "."
 
-- `generate_report`: true if `--report` present
-- `create_issue`: true if `--issue` present
-- `scope_path`: value after `--scope` or default to project root
+### Step 2: Read Configuration
 
-### Step 2: Discover Files
-
-Use Glob to find all TypeScript files (production AND test files):
+Read `.claude/settings.json` to get configured file extensions:
 
 ```text
-Pattern: **/*.{ts,tsx}
+Use Read tool on: .claude/settings.json
 ```
+
+Extract `fileExtensions` array from `.codeReview` section. If not found or settings file doesn't exist, use defaults: `["py", "js", "ts", "md", "sh"]`.
+
+### Step 3: Discover Files
+
+Build glob pattern from configured extensions:
+
+```text
+Pattern: **/*.{ext1,ext2,ext3,...}
+```
+
+Example: If extensions are `["py", "js", "ts"]`, use pattern `**/*.{py,js,ts}`
 
 The Glob tool respects `.gitignore`, so `node_modules/`, `dist/`, etc. are automatically excluded.
 
-If `scope_path` is set, use that as the base path for the glob.
+If `SCOPE_PATH` is set (not "."), use that as the base path for the glob.
 
 **Categorize files:**
 
-- Test files: any file matching `*.spec.ts`, `*.spec.tsx`, `*.test.ts`, `*.test.tsx`
-- Production files: all other `.ts`/`.tsx` files
+- Test files: any file matching `*.spec.*`, `*.test.*`, `*_test.*`, `*_spec.*`
+- Production files: all other matching files
 
 **Store the complete file lists** - these will be included in the report appendix.
 
@@ -55,9 +96,10 @@ Report:
 Found X files to review:
 - Production files: Y
 - Test files: Z
+- File extensions: [list of extensions used]
 ```
 
-### Step 3: Chunk Files
+### Step 4: Chunk Files
 
 Split file list into chunks of ~30 files each.
 
@@ -68,26 +110,26 @@ Chunking logic:
 
 Report: "Split into X chunks of ~Y files each"
 
-### Step 4: Review Each Chunk
+### Step 5: Review Each Chunk
 
-For each chunk, spawn the `automatic-code-reviewer` subagent:
+For each chunk, spawn the `code-reviewer` subagent:
 
 ```text
 Use Task tool with:
-- subagent_type: "automatic-code-reviewer"
+- subagent_type: "code-reviewer"
 - prompt: "Review these files: [file1, file2, ...]"
 ```
 
-**Important:** The automatic-code-reviewer will:
+**Important:** The code-reviewer will:
 
 1. Read `.claude/settings.json` to find the rules file
-2. Read the rules file (`.claude/automatic-code-review/rules.md`)
+2. Read the rules file (`${CLAUDE_PLUGIN_ROOT}/rules.md`)
 3. Review each file against ALL rules
 4. Return findings in structured format
 
 Collect ALL findings from each chunk.
 
-### Step 5: Aggregate Results
+### Step 6: Aggregate Results
 
 Combine findings from all chunks into categories:
 
@@ -103,7 +145,7 @@ Combine findings from all chunks into categories:
 Deduplicate similar findings.
 Sort by severity (Critical > High > Medium > Low).
 
-### Step 6: Display Summary
+### Step 7: Display Summary
 
 Always display a summary to the user:
 
@@ -133,9 +175,9 @@ Always display a summary to the user:
 3. [Third most critical]
 ```
 
-### Step 7: Generate Report (if --report)
+### Step 8: Generate Report (if --report)
 
-If `generate_report` is true:
+If `GENERATE_REPORT` is true:
 
 1. Create directory: `docs/reviews/` (if doesn't exist)
 2. Write report to: `docs/reviews/YYYY-MM-DD-full-review.md`
@@ -152,7 +194,7 @@ Report format:
 - **Total files reviewed:** Z
 - **Chunks processed:** N
 - **Total violations:** V
-- **Review rules:** .claude/automatic-code-review/rules.md
+- **Review rules:** ${CLAUDE_PLUGIN_ROOT}/rules.md
 
 ## Architecture/Modularity Violations
 
@@ -220,9 +262,9 @@ Based on patterns found in this review:
 
 Report: "Report saved to docs/reviews/YYYY-MM-DD-full-review.md"
 
-### Step 8: Create GitHub Issue (if --issue)
+### Step 9: Create GitHub Issue (if --issue)
 
-If `create_issue` is true:
+If `CREATE_ISSUE` is true:
 
 Use Bash to create issue via `gh`:
 
@@ -261,13 +303,16 @@ Report the issue URL.
 
 ## Error Handling
 
-- If no files found: Report "No TypeScript files found" and exit
-- If rules file not found: Warn but continue with basic review (automatic-code-reviewer handles this)
+- If no files found: Report "No matching files found for extensions [ext1, ext2, ...]" and exit
+- If rules file not found: Warn but continue with basic review (code-reviewer agent handles this)
 - If chunk review fails: Log error, continue with remaining chunks
 - If `gh` not installed: Warn and skip issue creation
+- If `.claude/settings.json` not found: Use default extensions ["py", "js", "ts", "md", "sh"]
 
 ## Notes
 
-- This reuses the existing `automatic-code-reviewer` agent from the `automatic-code-review` plugin
-- The same rules.md file is used, ensuring consistency between session reviews and full reviews
+- This reuses the existing `code-reviewer` agent from this plugin
+- The same `${CLAUDE_PLUGIN_ROOT}/rules.md` file is used, ensuring consistency between `/review` command and full reviews
+- Respects `fileExtensions` configuration from `.claude/settings.json`
 - Large codebases may take significant time - consider using `--scope` to limit
+- Supports any programming language configured in `fileExtensions` (Python, JavaScript, TypeScript, etc.)
