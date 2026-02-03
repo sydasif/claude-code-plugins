@@ -1,6 +1,6 @@
 # Claude Code Review Plugin
 
-A semantic code review plugin for Claude Code that automatically reviews modified files using customizable project-specific rules.
+A semantic code review plugin for Claude Code that manually reviews modified files using customizable project-specific rules.
 
 ## Features
 
@@ -95,7 +95,7 @@ The default rules enforce:
 
 ### Manual Review (Primary)
 
-Use the `/review` command to trigger a code review. The plugin will automatically identify which files have been modified since your last review and focus only on those.
+Use the `/review` command to trigger a code review. The plugin will identify which files have been modified since your last review and focus only on those.
 
 ## Requirements
 

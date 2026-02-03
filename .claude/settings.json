@@ -1,0 +1,22 @@
+{
+  "codeReview": {
+    "enabled": true,
+    "fileExtensions": [
+      "py",
+      "js",
+      "ts",
+      "tsx",
+      "java",
+      "cpp",
+      "md",
+      "sh"
+    ],
+    "rulesFile": "./plugins/code-review/rules.md",
+    "languageSpecificRules": {
+      "python": "./plugins/code-review/rules/python-rules.md",
+      "javascript": "./plugins/code-review/rules/javascript-rules.md",
+      "typescript": "./plugins/code-review/rules/typescript-rules.md",
+      "java": "./plugins/code-review/rules/java-rules.md"
+    }
+  }
+}

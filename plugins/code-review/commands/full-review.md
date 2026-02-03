@@ -6,7 +6,7 @@ allowed-tools: Glob, Read, Write, Bash, Task
 
 # Full Codebase Review
 
-Review the entire codebase against `${CLAUDE_PLUGIN_ROOT}/rules.md` - the same rules used for automatic code review on modified files, but applied to everything.
+Review the entire codebase against `${CLAUDE_PLUGIN_ROOT}/rules.md` - the same rules used for manual code review on modified files, but applied to everything.
 
 ## Arguments
 
@@ -152,9 +152,9 @@ Use Task tool with:
 
 **Important:** The code-reviewer will:
 
-1. Read `.claude/settings.json` to find the rules file
-2. Read the rules file (`${CLAUDE_PLUGIN_ROOT}/rules.md`)
-3. Review each file against ALL rules
+1. Read `.claude/settings.json` to get the configuration
+2. For each file, determine the appropriate rules file based on the file extension and language-specific rules configuration
+3. Apply the appropriate language-specific rules to each file
 4. Return findings in structured format
 
 Collect ALL findings from each chunk.
@@ -342,7 +342,7 @@ Report the issue URL.
 ## Notes
 
 - This reuses the existing `code-reviewer` agent from this plugin
-- The same `${CLAUDE_PLUGIN_ROOT}/rules.md` file is used, ensuring consistency between `/review` command and full reviews
+- Uses language-specific rules based on file extensions and configuration in `.claude/settings.json`, ensuring appropriate rules are applied to each file type
 - Respects `fileExtensions` configuration from `.claude/settings.json`
 - Large codebases may take significant time - consider using `--scope` to limit
 - Supports any programming language configured in `fileExtensions` (Python, JavaScript, TypeScript, etc.)

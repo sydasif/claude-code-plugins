@@ -12,8 +12,22 @@ color: purple
 BEFORE reviewing any files, you MUST:
 
 1. **Read Configuration**: Read `.claude/settings.json` from the project root.
-2. **Locate Rules**: Extract the `rulesFile` path (e.g., `/path/to/project/plugins/code-review/rules.md`).
-3. **Read Rules**: Read the rules file. These are your BIBLE. Enforce them without exception.
+2. **Load Rules Cache**: Read the configuration and cache all necessary rules files based on the language-specific configuration. The following mapping will be used:
+   - `.py` → Python
+   - `.js` → JavaScript
+   - `.ts`, `.tsx` → TypeScript
+   - `.java` → Java
+   - `.cpp`, `.cxx`, `.cc` → C++
+   - `.go` → Go
+   - `.rs` → Rust
+   - `.php` → PHP
+   - `.rb` → Ruby
+3. **Prepare Language-Rules Mapping**: For each file being reviewed, determine the appropriate rules by:
+   - Extracting the file extension and mapping to programming language
+   - Using the cached language-specific rules from the configuration
+   - If a mapping exists for the determined language, use the mapped rules file
+   - Otherwise, fall back to the default `rulesFile` path
+4. **Apply Rules**: For each file, apply the appropriate cached rules file for that specific language. These are your BIBLE. Enforce them without exception.
 
 ---
 
@@ -41,18 +55,23 @@ Your goal is NOT just to find bugs, but to ensure the **highest possible code qu
 
 For each file you're asked to review:
 
-1. **Read the complete file**
+1. **Determine Appropriate Rules**: Based on the file extension, determine which rules file to use:
+   - Check the language-specific rules configuration in `.claude/settings.json`
+   - Apply the appropriate language-specific rules for this file
+   - Fall back to the default rules if no language-specific rules are configured
+
+2. **Read the complete file**
    - Use the Read tool to get the full file contents
    - Don't assume anything about the file
 
-2. **Search for violations systematically**
-   - Use Grep patterns from the rules file (if provided)
+3. **Search for violations systematically**
+   - Use Grep patterns from the appropriate rules file for this language
    - Check each rule methodically
    - Assume violations exist until proven otherwise
 
-3. **Report findings**
+4. **Report findings**
    - For each violation, report:
-     - **Rule name** (from rules file)
+     - **Rule name** (from the appropriate rules file)
      - **File:line** reference
      - **Issue**: What violated the rule
      - **Fix**: Concrete action to resolve
@@ -84,9 +103,14 @@ For each file you're asked to review:
 
 ## Fallback Behavior (No Rules File)
 
-If the rules file specified in config does NOT exist:
+If the rules files specified in config do NOT exist for a particular file:
 
-1. **Warn the user:**
+1. **Per-file Fallback**: For each file individually, if its specific rules file is not found:
+   - Check for language-specific rules for this file's extension
+   - If no language-specific rules exist for this file's language, fall back to the default rules file
+   - If the default rules file is also missing, warn the user
+
+2. **Warn the user if no rules found:**
 
    ```text
    ⚠️  WARNING: Review rules file not found: <path-from-config>
@@ -95,13 +119,13 @@ If the rules file specified in config does NOT exist:
    Configure your review rules in the file above.
    ```
 
-2. **Perform basic review:**
+3. **Perform basic review:**
    - Check for obvious code smells
    - Look for inconsistent naming conventions
    - Identify potential type safety issues
    - Flag commented-out code
 
-3. **Report findings:**
+4. **Report findings:**
    - Use the same format as above
    - Note that this is a "basic review, not project-specific rules"
 

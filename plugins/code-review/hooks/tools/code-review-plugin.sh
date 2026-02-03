@@ -148,22 +148,67 @@ get_or_initialize_plugin_settings() {
       fi
 
       local rules_path="${plugin_root}/rules.md"
-      echo "$existing" | jq --arg rp "$rules_path" '.codeReview = {"enabled": true, "fileExtensions": ["py", "js", "ts", "md", "sh"], "rulesFile": $rp}' > "$settings_file"
+      echo "$existing" | jq --arg rp "$rules_path" --arg pypath "${plugin_root}/rules/python-rules.md" --arg jspath "${plugin_root}/rules/javascript-rules.md" --arg tspath "${plugin_root}/rules/typescript-rules.md" --arg javapath "${plugin_root}/rules/java-rules.md" '
+        .codeReview = {
+          "enabled": true,
+          "fileExtensions": ["py", "js", "ts", "java", "cpp", "md", "sh"],
+          "rulesFile": $rp,
+          "languageSpecificRules": {
+            "python": $pypath,
+            "javascript": $jspath,
+            "typescript": $tspath,
+            "java": $javapath
+          }
+        }
+      ' > "$settings_file"
 
       if [[ ! -f "$rules_file" ]]; then
         cp "${plugin_root}/rules.md" "$rules_file" 2>/dev/null || true
       fi
 
+      # Create language-specific rules files if they don't exist
+      if [[ -f "$(dirname "$0")/../rules/python-rules.md" ]]; then
+        [[ ! -f "${plugin_root}/rules/python-rules.md" ]] && cp "$(dirname "$0")/../rules/python-rules.md" "${plugin_root}/rules/python-rules.md" 2>/dev/null || true
+      fi
+      if [[ -f "$(dirname "$0")/../rules/javascript-rules.md" ]]; then
+        [[ ! -f "${plugin_root}/rules/javascript-rules.md" ]] && cp "$(dirname "$0")/../rules/javascript-rules.md" "${plugin_root}/rules/javascript-rules.md" 2>/dev/null || true
+      fi
+      if [[ -f "$(dirname "$0")/../rules/typescript-rules.md" ]]; then
+        [[ ! -f "${plugin_root}/rules/typescript-rules.md" ]] && cp "$(dirname "$0")/../rules/typescript-rules.md" "${plugin_root}/rules/typescript-rules.md" 2>/dev/null || true
+      fi
+      if [[ -f "$(dirname "$0")/../rules/java-rules.md" ]]; then
+        [[ ! -f "${plugin_root}/rules/java-rules.md" ]] && cp "$(dirname "$0")/../rules/java-rules.md" "${plugin_root}/rules/java-rules.md" 2>/dev/null || true
+      fi
+
       echo "✅ code-review plugin initialized!" >&2
       echo "   Updated: .claude/settings.json" >&2
       echo "   Created: ${CLAUDE_PLUGIN_ROOT}/rules.md (default rules)" >&2
-      echo "   Customize ${CLAUDE_PLUGIN_ROOT}/rules.md for your project." >&2
+      echo "   Created: Language-specific rules in ${CLAUDE_PLUGIN_ROOT}/rules/" >&2
+      echo "   Customize the rules files for your project." >&2
 
       touch "$init_flag"
     fi
   fi
 
   jq -r '.codeReview // {}' "$settings_file" 2>/dev/null || echo '{}'
+}
+
+get_language_from_extension() {
+  local file_path="$1"
+  local extension="${file_path##*.}"
+
+  case "$extension" in
+    py) echo "python" ;;
+    js) echo "javascript" ;;
+    ts|tsx) echo "typescript" ;;
+    java) echo "java" ;;
+    cpp|cxx|cc) echo "cpp" ;;
+    go) echo "go" ;;
+    rs) echo "rust" ;;
+    php) echo "php" ;;
+    rb) echo "ruby" ;;
+    *) echo "unknown" ;;
+  esac
 }
 
 cmd_log() {
