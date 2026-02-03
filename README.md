@@ -8,7 +8,7 @@ A semantic code review plugin for Claude Code that manually reviews modified fil
 - **Semantic Analysis**: Checks for logic, style, and safety issues that linters miss
 - **Incremental Reviews**: Only reviews files modified since the last review cycle
 - **Customizable Rules**: Define your own semantic rules per project
-- **Multi-Language Support**: Configurable for any programming language
+- **Multi-Language Support**: Focused on top 5 programming languages of 2025
 - **Language-Specific Rules**: Different programming languages can have their own specific review rules
 
 ## Installation
@@ -169,7 +169,7 @@ The plugin consists of:
 This tool complements, rather than replaces, traditional static analysis:
 
 1. Use **Ruff**, **ESLint**, or **Pylint** for formatting and basic linting
-2. Use **Mypy** or **TypeScript** for type checking
+2. Use **Mypy** or **Rust** type checker for type checking
 3. Use this **Code Review Plugin** for semantic rules (e.g., "Docstrings must explain *why*, not just *what*", or "Variable names must be domain-specific")
 
 ## Contributing
