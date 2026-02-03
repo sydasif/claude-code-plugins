@@ -20,7 +20,7 @@ Follow Kotlin naming conventions as defined in Kotlin Coding Conventions.
 - `PascalCase` for class, interface, object, and annotation names: `UserManager`, `HttpRequest`
 - `camelCase` for function names, variable names, and properties: `getUser`, `userName`
 - `UPPER_SNAKE_CASE` for constants: `MAX_RETRY_COUNT`, `DEFAULT_TIMEOUT`
-- `backticks` for names that match Kotlin keywords: `val `class` = "value"`
+- `backticks` for names that match Kotlin keywords: `val`class`= "value"`
 - Descriptive names that clearly indicate the purpose
 - Use `is` prefix for Boolean properties: `isEnabled`, `hasChildren`
 

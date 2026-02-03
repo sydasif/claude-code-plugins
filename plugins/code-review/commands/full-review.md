@@ -1,92 +1,15 @@
 ---
-argument-hint: [--report] [--issue] [--scope <path>]
-description: Run full codebase review using code-reviewer agent with project-specific rules
-allowed-tools: Glob, Read, Write, Bash, Task
+name: full-review
+description: Run full codebase review using *code-reviewer* agent with project-specific rules
 ---
 
 # Full Codebase Review
 
-Review the entire codebase against `${CLAUDE_PLUGIN_ROOT}/rules.md` - the same rules used for manual code review on modified files, but applied to everything.
-
-## Arguments
-
-- `--report`: Save findings to `docs/reviews/YYYY-MM-DD-full-review.md`
-- `--issue`: Create GitHub issue with findings summary
-- `--scope <path>`: Limit to specific path (default: entire codebase)
+Review the entire codebase against `${CLAUDE_PLUGIN_ROOT}/rules/` using the `code-reviewer` subagent.
 
 ## Procedure
 
-### Step 1: Check Plugin Status and Parse Arguments
-
-First, check if the plugin is enabled before proceeding:
-
-```bash
-# Check if plugin is enabled
-ENABLED=$(jq -r '.codeReview.enabled // true' .claude/settings.json 2>/dev/null || echo "true")
-if [[ "$ENABLED" != "true" ]]; then
-  echo "Code review plugin is disabled in settings" >&2
-  exit 0
-fi
-```
-
-Then, parse `$ARGUMENTS` using Bash:
-
-```bash
-# Initialize variables
-GENERATE_REPORT=false
-CREATE_ISSUE=false
-SCOPE_PATH="."
-
-# Parse arguments
-while [[ $# -gt 0 ]]; do
-  case "$1" in
-    --report)
-      GENERATE_REPORT=true
-      shift
-      ;;
-    --issue)
-      CREATE_ISSUE=true
-      shift
-      ;;
-    --scope)
-      if [[ -n "$2" && "$2" != --* ]]; then
-        SCOPE_PATH="$2"
-        shift 2
-      else
-        echo "Error: --scope requires a path argument" >&2
-        exit 1
-      fi
-      ;;
-    *)
-      echo "Warning: Unknown argument: $1" >&2
-      shift
-      ;;
-  esac
-done
-
-# Validate and sanitize SCOPE_PATH to prevent path traversal
-if [[ "$SCOPE_PATH" != /* ]]; then
-  # If relative path, convert to absolute and ensure it's within current directory
-  SCOPE_PATH_REAL=$(realpath "$SCOPE_PATH" 2>/dev/null || echo ".")
-  CURRENT_DIR_REAL=$(realpath . 2>/dev/null || pwd)
-  if [[ ! "$SCOPE_PATH_REAL" =~ ^"$CURRENT_DIR_REAL"(/|$) ]]; then
-    echo "Error: Scope path must be within current directory" >&2
-    exit 1
-  fi
-else
-  # If absolute path, ensure it's within reasonable bounds (implementation-dependent)
-  # For security, we may want to restrict absolute paths in certain contexts
-  : # Placeholder - implement as needed
-fi
-```
-
-Variables set:
-
-- `GENERATE_REPORT`: true if `--report` present
-- `CREATE_ISSUE`: true if `--issue` present
-- `SCOPE_PATH`: value after `--scope` or defaults to "."
-
-### Step 2: Read Configuration
+### Step 1: Read Configuration
 
 Read `.claude/settings.json` to get configured file extensions:
 
@@ -96,7 +19,7 @@ Use Read tool on: .claude/settings.json
 
 Extract `fileExtensions` array from `.codeReview` section. If not found or settings file doesn't exist, use defaults: `["py", "js", "ts"]`.
 
-### Step 3: Discover Files
+### Step 2: Discover Files
 
 Build glob pattern from configured extensions:
 
@@ -131,7 +54,7 @@ Found X files to review:
 - File extensions: [list of extensions used]
 ```
 
-### Step 4: Chunk Files
+### Step 3: Chunk Files
 
 Split file list into chunks of ~30 files each.
 
@@ -142,7 +65,7 @@ Chunking logic:
 
 Report: "Split into X chunks of ~Y files each"
 
-### Step 5: Review Each Chunk
+### Step 4: Review Each Chunk
 
 For each chunk, spawn the `code-reviewer` subagent:
 
@@ -161,7 +84,7 @@ Use Task tool with:
 
 Collect ALL findings from each chunk.
 
-### Step 6: Aggregate Results
+### Step 5: Aggregate Results
 
 Combine findings from all chunks into categories:
 
@@ -177,7 +100,7 @@ Combine findings from all chunks into categories:
 Deduplicate similar findings.
 Sort by severity (Critical > High > Medium > Low).
 
-### Step 7: Display Summary
+### Step 6: Display Summary
 
 Always display a summary to the user:
 
@@ -207,132 +130,6 @@ Always display a summary to the user:
 3. [Third most critical]
 ```
 
-### Step 8: Generate Report (if --report)
-
-If `GENERATE_REPORT` is true:
-
-1. Create directory: `docs/reviews/` (if doesn't exist)
-2. Write report to: `docs/reviews/YYYY-MM-DD-full-review.md`
-
-Report format:
-
-```markdown
-# Full Codebase Review - YYYY-MM-DD
-
-## Summary
-
-- **Production files reviewed:** X
-- **Test files reviewed:** Y
-- **Total files reviewed:** Z
-- **Chunks processed:** N
-- **Total violations:** V
-- **Review rules:** ${CLAUDE_PLUGIN_ROOT}/rules.md
-
-## Architecture/Modularity Violations
-
-[List all findings with file:line, issue, suggested fix]
-
-## Coding Standards Violations
-
-[List all findings]
-
-## Testing Standards Violations
-
-[List all findings]
-
-## Dangerous Fallback Values
-
-[List all findings]
-
-## Anti-Pattern Violations
-
-[List all findings]
-
-## Duplicated Code
-
-[List all findings]
-
-## Other Findings
-
-[Anything that doesn't fit the categories above]
-
-## Suggested Updates to Conventions
-
-Based on patterns found in this review:
-
-1. [Suggestion for updating docs/conventions/]
-2. [Another suggestion]
-
----
-
-## Appendix: Files Reviewed
-
-### Production Files (X)
-
-<details>
-<summary>Click to expand full list</summary>
-
-- path/to/file1.ts
-- path/to/file2.ts
-...
-</details>
-
-### Test Files (Y)
-
-<details>
-<summary>Click to expand full list</summary>
-
-- path/to/file1.spec.ts
-- path/to/file2.test.ts
-...
-</details>
-
----
-
-*Generated by full-codebase-review plugin*
-```
-
-Report: "Report saved to docs/reviews/YYYY-MM-DD-full-review.md"
-
-### Step 9: Create GitHub Issue (if --issue)
-
-If `CREATE_ISSUE` is true:
-
-Use Bash to create issue via `gh`:
-
-```bash
-gh issue create \
-  --title "Full Codebase Review - YYYY-MM-DD" \
-  --body "$(cat <<'EOF'
-## Summary
-
-- Files reviewed: X
-- Total violations: Z
-
-## Action Required
-
-### Critical (fix immediately)
-- [ ] [Critical finding 1]
-- [ ] [Critical finding 2]
-
-### High Priority
-- [ ] [High priority finding 1]
-- [ ] [High priority finding 2]
-
-## Full Report
-
-See: docs/reviews/YYYY-MM-DD-full-review.md (if --report was used)
-
----
-*Generated by full-codebase-review plugin*
-EOF
-)" \
-  --label "tech-debt" \
-  --label "code-review"
-```
-
-Report the issue URL.
-
 ## Error Handling
 
 - If no files found: Report "No matching files found for extensions [ext1, ext2, ...]" and exit
@@ -344,7 +141,7 @@ Report the issue URL.
 ## Notes
 
 - This reuses the existing `code-reviewer` agent from this plugin
-- Uses language-specific rules based on file extensions and configuration in `.claude/settings.json`, ensuring appropriate rules are applied to each file type
+- Uses language-specific rules based on file extensions and configuration in `.claude/settings.json`.
+- Ensuring appropriate rules are applied to each file type
 - Respects `fileExtensions` configuration from `.claude/settings.json`
-- Large codebases may take significant time - consider using `--scope` to limit
 - Supports any programming language configured in `fileExtensions` (Python, JavaScript, TypeScript, etc.)

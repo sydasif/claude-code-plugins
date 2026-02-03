@@ -121,7 +121,7 @@ get_or_initialize_plugin_settings() {
       # Create language-specific rules files if they don't exist
       local rules_src_dir="$(dirname "$0")/../rules"
       local rules_dest_dir="${plugin_root}/rules"
-      
+
       for lang_file in "${rules_src_dir}"/*-rules.md; do
         if [[ -f "$lang_file" ]]; then
           local dest_file="${rules_dest_dir}/$(basename "$lang_file")"

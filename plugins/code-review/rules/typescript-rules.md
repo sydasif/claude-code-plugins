@@ -167,7 +167,7 @@ Leverage TypeScript-specific features to write better code.
 - Use utility types: `Partial<User>`, `Required<User>`, `Readonly<User>`, `Pick<User, 'id' | 'name'>`, `Omit<User, 'password'>`, `Exclude<T, U>`, `Extract<T, U>`
 - Use mapped types for complex transformations
 - Leverage conditional types for advanced type logic when appropriate
-- Use template literal types for string manipulation: `type EventName = `on${Capitalize<string>}`
+- Use template literal types for string manipulation: `type EventName =`on${Capitalize<string>}`
 - Use const assertions for literal types: `const options = ['red', 'blue'] as const`
 - Use `satisfies` operator (TS 4.9+) for type checking without changing runtime value
 - Use assertion functions for custom type guards: `function assert(condition: boolean): asserts condition`
