@@ -1,7 +1,0 @@
-{
-  "codeReview": {
-    "enabled": true,
-    "fileExtensions": ["py", "js", "ts", "md", "sh"],
-    "rulesFile": "/home/zulu/Documents/code-review/plugins/code-review/rules.md"
-  }
-}
