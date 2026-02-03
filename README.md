@@ -9,6 +9,7 @@ A semantic code review plugin for Claude Code that manually reviews modified fil
 - **Incremental Reviews**: Only reviews files modified since the last review cycle
 - **Customizable Rules**: Define your own semantic rules per project
 - **Multi-Language Support**: Configurable for any programming language
+- **Language-Specific Rules**: Different programming languages can have their own specific review rules
 
 ## Installation
 
@@ -92,6 +93,81 @@ The default rules enforce:
 - No `print()` statements (Use `logging` instead)
 - Explicit Exception Handling
 - PEP 8 Naming Conventions
+
+### Language-Specific Rules
+
+The plugin supports language-specific rules, allowing different programming languages to have their own specific review rules. This enables more targeted and relevant code reviews based on the programming language being used.
+
+The plugin currently supports language-specific rules for:
+
+- Python (`.py`)
+- JavaScript (`.js`)
+- TypeScript (`.ts`, `.tsx`)
+- Java (`.java`)
+- Go (`.go`)
+- C# (`.cs`)
+- C++ (`.cpp`, `.cxx`, `.cc`)
+- PHP (`.php`)
+- Ruby (`.rb`)
+- Swift (`.swift`)
+- Kotlin (`.kt`)
+- Rust (`.rs`)
+- Dart (`.dart`)
+
+#### Configuration
+
+Language-specific rules are configured in `.claude/settings.json`:
+
+```json
+{
+  "codeReview": {
+    "enabled": true,
+    "fileExtensions": [
+      "py",
+      "js",
+      "ts",
+      "tsx",
+      "java",
+      "cpp",
+      "go",
+      "cs",
+      "php",
+      "rb",
+      "swift",
+      "kt",
+      "rs",
+      "dart"
+    ],
+    "rulesFile": "./plugins/code-review/rules.md",
+    "languageSpecificRules": {
+      "python": "./plugins/code-review/rules/python-rules.md",
+      "javascript": "./plugins/code-review/rules/javascript-rules.md",
+      "typescript": "./plugins/code-review/rules/typescript-rules.md",
+      "java": "./plugins/code-review/rules/java-rules.md",
+      "go": "./plugins/code-review/rules/go-rules.md",
+      "csharp": "./plugins/code-review/rules/csharp-rules.md",
+      "cpp": "./plugins/code-review/rules/cpp-rules.md",
+      "php": "./plugins/code-review/rules/php-rules.md",
+      "ruby": "./plugins/code-review/rules/ruby-rules.md",
+      "swift": "./plugins/code-review/rules/swift-rules.md",
+      "kotlin": "./plugins/code-review/rules/kotlin-rules.md",
+      "rust": "./plugins/code-review/rules/rust-rules.md",
+      "dart": "./plugins/code-review/rules/dart-rules.md"
+    }
+  }
+}
+```
+
+When files are modified and a review is triggered, the plugin detects the programming language based on the file extension and applies the appropriate language-specific rules. If no language-specific rules are configured for a particular language, the plugin falls back to the default `rulesFile`.
+
+#### Creating Custom Language Rules
+
+To create custom rules for a language:
+
+1. Create a new rules file in `plugins/code-review/rules/` with a descriptive name
+2. Follow the same format as existing rules files
+3. Add an entry to the `languageSpecificRules` section in `.claude/settings.json`
+4. Add the appropriate file extension to the `fileExtensions` array
 
 ### Manual Review (Primary)
 
