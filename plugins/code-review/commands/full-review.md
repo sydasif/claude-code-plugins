@@ -16,9 +16,20 @@ Review the entire codebase against `${CLAUDE_PLUGIN_ROOT}/rules.md` - the same r
 
 ## Procedure
 
-### Step 1: Parse Arguments
+### Step 1: Check Plugin Status and Parse Arguments
 
-Parse `$ARGUMENTS` using Bash:
+First, check if the plugin is enabled before proceeding:
+
+```bash
+# Check if plugin is enabled
+ENABLED=$(jq -r '.codeReview.enabled // true' .claude/settings.json 2>/dev/null || echo "true")
+if [[ "$ENABLED" != "true" ]]; then
+  echo "Code review plugin is disabled in settings" >&2
+  exit 0
+fi
+```
+
+Then, parse `$ARGUMENTS` using Bash:
 
 ```bash
 # Initialize variables
@@ -52,6 +63,21 @@ while [[ $# -gt 0 ]]; do
       ;;
   esac
 done
+
+# Validate and sanitize SCOPE_PATH to prevent path traversal
+if [[ "$SCOPE_PATH" != /* ]]; then
+  # If relative path, convert to absolute and ensure it's within current directory
+  SCOPE_PATH_REAL=$(realpath "$SCOPE_PATH" 2>/dev/null || echo ".")
+  CURRENT_DIR_REAL=$(realpath . 2>/dev/null || pwd)
+  if [[ ! "$SCOPE_PATH_REAL" =~ ^"$CURRENT_DIR_REAL"(/|$) ]]; then
+    echo "Error: Scope path must be within current directory" >&2
+    exit 1
+  fi
+else
+  # If absolute path, ensure it's within reasonable bounds (implementation-dependent)
+  # For security, we may want to restrict absolute paths in certain contexts
+  : # Placeholder - implement as needed
+fi
 ```
 
 Variables set:
@@ -78,6 +104,10 @@ Pattern: **/*.{ext1,ext2,ext3,...}
 ```
 
 Example: If extensions are `["py", "js", "ts"]`, use pattern `**/*.{py,js,ts}`
+
+Edge case handling:
+- If fileExtensions array is empty [], exit gracefully with message "No matching files found for extensions []"
+- If fileExtensions has only one element like ["py"], the pattern should be **/*.py (not **/*.{py})
 
 The Glob tool respects `.gitignore`, so `node_modules/`, `dist/`, etc. are automatically excluded.
 

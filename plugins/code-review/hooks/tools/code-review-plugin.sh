@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Exit codes
+readonly EXIT_REVIEW_REQUIRED=2
+
 if ! command -v jq >/dev/null 2>&1; then
   echo "ERROR: jq is required but not installed." >&2
   echo "Install with: brew install jq (macOS) or apt-get install jq (Linux)" >&2
@@ -59,7 +62,10 @@ log_event() {
       ;;
   esac
 
-  echo "$event_json" >> "$log_file"
+  (
+    flock -x 200
+    echo "$event_json" >> "$log_file"
+  ) 200>"${log_file}.lock"
 }
 
 has_new_files() {
@@ -157,7 +163,7 @@ get_or_initialize_plugin_settings() {
     fi
   fi
 
-  jq -r '.codeReview' "$settings_file"
+  jq -r '.codeReview // {}' "$settings_file" 2>/dev/null || echo '{}'
 }
 
 cmd_log() {
@@ -167,7 +173,10 @@ cmd_log() {
   SESSION_ID=$(echo "$INPUT" | jq -r '.session_id // ""')
   FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // ""')
 
-  [[ -z "$SESSION_ID" ]] && exit 0
+  if [[ -z "$SESSION_ID" ]]; then
+    echo "Warning: No session ID provided for log command, skipping" >&2
+    exit 0
+  fi
 
   SETTINGS=$(get_or_initialize_plugin_settings "$SESSION_ID")
   ENABLED=$(echo "$SETTINGS" | jq -r '.enabled // true')
@@ -205,7 +214,10 @@ cmd_review() {
   INPUT=$(cat)
   SESSION_ID=$(echo "$INPUT" | jq -r '.session_id // ""')
 
-  [[ -z "$SESSION_ID" ]] && exit 0
+  if [[ -z "$SESSION_ID" ]]; then
+    echo "Warning: No session ID provided for review command, skipping" >&2
+    exit 0
+  fi
 
   SETTINGS=$(get_or_initialize_plugin_settings "$SESSION_ID")
   ENABLED=$(echo "$SETTINGS" | jq -r '.enabled // true')
@@ -264,7 +276,7 @@ EOF
 
   echo "$FILES_LIST"
 
-  exit 2
+  exit $EXIT_REVIEW_REQUIRED
 }
 
 case "$COMMAND" in

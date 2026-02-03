@@ -52,7 +52,7 @@ The plugin auto-initializes with default settings in `.claude/settings.json`:
 {
   "codeReview": {
     "enabled": true,
-    "fileExtensions": ["py", "ipynb"],
+    "fileExtensions": ["py", "js", "ts", "md", "sh"],
     "rulesFile": "${CLAUDE_PLUGIN_ROOT}/rules.md"
   }
 }
