@@ -222,34 +222,77 @@ Write efficient code that minimizes resource consumption.
 
 ---
 
-## Rule 10: Performance Optimization
+## Rule 10: Testing Best Practices
 
-Write efficient code that minimizes resource consumption.
+Write comprehensive tests to ensure code quality and prevent regressions.
 
 ❌ **Forbidden:**
 
-- Heavy computations in render methods or loops
-- Creating functions in render (in React)
-- Memory leaks from unsubscribed event listeners or intervals
-- Blocking the main thread with synchronous operations
-- Frequent DOM manipulation in loops
-- Unoptimized API calls without caching or debouncing
+- Tests with no assertions
+- Tests that depend on external services without proper mocking
+- Tests that don't cover edge cases
+- Tests that modify shared state without proper isolation
+- Using `console.log` in tests instead of proper assertions
+- Tests that depend on execution order
+- Hardcoded timeouts that cause flaky tests
 
 ✅ **Required:**
 
-- Use memoization: `useMemo`, `useCallback` in React
-- Debounce/throttle expensive operations
-- Use virtualization for large lists
-- Implement lazy loading for non-critical resources
-- Optimize bundle size by tree-shaking unused code
-- Use efficient algorithms and data structures
-- Minimize DOM access and manipulation
-- Use `requestAnimationFrame()` for animations instead of `setInterval()`
-- Use `DocumentFragment` for multiple DOM insertions
-- Implement proper cleanup for event listeners and timers
-- Use `IntersectionObserver` for scroll-based effects
+- Use appropriate testing frameworks (Jest, Vitest, Mocha, Cypress, Playwright)
+- Follow AAA pattern: Arrange, Act, Assert
+- Test both happy path and error conditions
+- Use meaningful test descriptions: `it('should handle invalid user input', ...)`
+- Test boundary conditions and edge cases (empty arrays, null values, large inputs)
+- Mock external dependencies (APIs, databases, file system)
+- Use `beforeEach`/`afterEach` for proper test setup and cleanup
+- Keep tests fast and independent
+- Use code coverage tools (nyc, c8) to identify untested code
+- Write integration tests for critical user flows
+- Use snapshot testing sparingly and intentionally
+- Test accessibility with tools like jest-axe or @testing-library/jest-dom
 
-**Why:** Efficient code provides better user experience and scales better.
+**Example:**
+
+```javascript
+// Good: Comprehensive test with setup, multiple assertions, and cleanup
+describe('UserService', () => {
+  let service;
+  let mockApi;
+
+  beforeEach(() => {
+    mockApi = { fetchUser: jest.fn() };
+    service = new UserService(mockApi);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should return user data when valid ID provided', async () => {
+    // Arrange
+    const userId = 123;
+    const expectedUser = { id: userId, name: 'John Doe' };
+    mockApi.fetchUser.mockResolvedValue(expectedUser);
+
+    // Act
+    const result = await service.getUser(userId);
+
+    // Assert
+    expect(result).toEqual(expectedUser);
+    expect(mockApi.fetchUser).toHaveBeenCalledWith(userId);
+  });
+
+  it('should throw error when user not found', async () => {
+    // Arrange
+    mockApi.fetchUser.mockRejectedValue(new Error('User not found'));
+
+    // Act & Assert
+    await expect(service.getUser(999)).rejects.toThrow('User not found');
+  });
+});
+```
+
+**Why:** Comprehensive tests ensure code correctness, enable confident refactoring, and serve as living documentation.
 
 ---
 
