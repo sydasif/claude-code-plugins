@@ -159,15 +159,20 @@ Leverage TypeScript-specific features to write better code.
 - Not using readonly when immutability is intended
 - Ignoring utility types that could simplify code
 - Misusing conditional types causing poor performance
+- Overusing complex generic types that hurt compilation speed
 
 ✅ **Required:**
 
 - Use `readonly` for immutable properties: `readonly items: string[]`
-- Use utility types: `Partial<User>`, `Required<User>`, `Readonly<User>`, `Pick<User, 'id' | 'name'>`, `Omit<User, 'password'>`
+- Use utility types: `Partial<User>`, `Required<User>`, `Readonly<User>`, `Pick<User, 'id' | 'name'>`, `Omit<User, 'password'>`, `Exclude<T, U>`, `Extract<T, U>`
 - Use mapped types for complex transformations
 - Leverage conditional types for advanced type logic when appropriate
 - Use template literal types for string manipulation: `type EventName = `on${Capitalize<string>}`
 - Use const assertions for literal types: `const options = ['red', 'blue'] as const`
+- Use `satisfies` operator (TS 4.9+) for type checking without changing runtime value
+- Use assertion functions for custom type guards: `function assert(condition: boolean): asserts condition`
+- Use discriminant unions for better type narrowing
+- Apply variance annotations for generic type parameters when needed
 
 **Why:** Using TypeScript's advanced features maximizes type safety and code expressiveness.
 
@@ -222,23 +227,59 @@ Implement secure coding practices specific to TypeScript.
 
 ❌ **Forbidden:**
 
-- Trusting user input without proper type validation
+- Trusting user input without proper runtime validation
 - Using `eval()` or similar dynamic execution with user data
 - Storing sensitive data in client-side TypeScript code
+- Assuming compile-time types guarantee runtime safety
+- Using `any` or type assertions to bypass security checks
 
 ✅ **Required:**
 
-- Validate types at runtime boundaries using libraries like Zod or Joi
+- Validate types at runtime boundaries using libraries like Zod, Yup, or io-ts
 - Use branded types to prevent mixing similar types: `type UserId = string & { __brand: 'UserId' }`
 - Sanitize data before using in templates or DOM manipulation
-- Type-check external API responses properly
+- Type-check external API responses with proper runtime validation
 - Use secure typing for authentication states
+- Implement proper input sanitization and output encoding
+- Apply type guards for untrusted data: `function isValidInput(data: unknown): data is MyType`
+- Use strict mode and enable strict type checking in tsconfig.json
+- Apply the principle of least privilege for type permissions
 
-**Why:** Type safety is an additional layer of security but not a replacement for proper validation.
+**Why:** Type safety is an additional layer of security but not a replacement for proper runtime validation.
 
 ---
 
-## Rule 10: Performance and Bundle Size
+## Rule 10: Performance and Compilation Optimization
+
+Consider performance implications of TypeScript features and optimize compilation speed.
+
+❌ **Forbidden:**
+
+- Complex conditional types that slow compilation significantly
+- Massive generic type definitions that impact build times
+- Type-only imports used incorrectly causing runtime dependencies
+- Unnecessary type assertions that impact runtime performance
+- Disabling strict type checking for convenience
+
+✅ **Required:**
+
+- Use type-only imports when appropriate: `import type { MyType } from './types'`
+- Simplify complex types when they impact compilation speed
+- Be mindful of recursive conditional types
+- Use declaration files for external library types when needed
+- Enable `skipLibCheck` in tsconfig.json to skip checking declaration files
+- Use `isolatedModules: true` for faster independent file compilation
+- Enable `incremental: true` for faster rebuilds
+- Use `tslib` helpers to reduce bundle size: `importHelpers: true`
+- Apply `--noEmit` for type checking only during development
+- Use project references for monorepos to enable faster incremental builds
+- Avoid excessively deep type recursion that impacts compiler performance
+
+**Why:** Optimizing TypeScript compilation and runtime performance ensures efficient development workflow and better application performance.
+
+---
+
+## Rule 11: Performance and Bundle Size
 
 Consider performance implications of TypeScript features.
 

@@ -46,7 +46,7 @@ def fetch_user(user_id: int) -> dict:
 
 ---
 
-## Rule 2: Strict Type Hints (PEP 484, PEP 526)
+## Rule 2: Strict Type Hints (PEP 484, PEP 526, PEP 544)
 
 No escape hatches. Use precise type hints for all function arguments and return values.
 
@@ -56,14 +56,21 @@ No escape hatches. Use precise type hints for all function arguments and return 
 - `Any` (unless absolutely necessary and justified)
 - Bare `list` or `dict` without generics (use `list[str]`, `dict[str, int]`)
 - Unused imports that cause circular dependency workarounds
+- Inconsistent use of Union syntax (mixing `Union[A, B]` and `A | B`)
 
 ✅ **Required:**
 
 - Full signatures: `def func(a: int, b: str) -> bool:`
 - `Optional[T]` or `T | None` for nullable values (Python 3.10+)
-- `Union` or `|` for multiple types (Python 3.10+)
+- `Union` or `|` for multiple types (Python 3.10+), prefer `|` syntax
 - Variable annotations: `count: int = 0`
-- Generic types: `List[int]`, `Dict[str, Any]`, or `list[int]`, `dict[str, Any]` (Python 3.9+)
+- Generic types: `list[int]`, `dict[str, Any]` (Python 3.9+) or `List[int]`, `Dict[str, Any]` for older versions
+- Use `Protocol` for structural subtyping: `class Drawable(Protocol): def draw(self) -> None: ...`
+- Use `TypeVar` for generic functions: `T = TypeVar('T', bound=str)`
+- Use `Literal` for exact values: `mode: Literal['r', 'w', 'a']`
+- Use `TypedDict` for dictionary structures with known keys
+- Use `Final` for constants: `MAX_SIZE: Final = 100`
+- Use `NoReturn` for functions that never return: `def die() -> NoReturn: ...`
 
 **Why:** Type hints catch bugs before runtime and serve as excellent documentation.
 
@@ -184,14 +191,21 @@ Implement secure coding practices to prevent vulnerabilities.
 - Direct use of `eval()`, `exec()`, or `compile()` with user input
 - Unsanitized input in SQL queries (use parameterized queries)
 - Insecure deserialization (pickle) with untrusted data
+- Using `input()` or similar functions without validation in production
+- Importing modules from untrusted sources
 
 ✅ **Required:**
 
-- Store secrets in environment variables or secure vaults
+- Store secrets in environment variables, secure vaults, or use libraries like `python-dotenv` with proper .gitignore
 - Use parameterized queries or ORM to prevent SQL injection
-- Validate and sanitize all user inputs
-- Use secure random generators for tokens
-- Hash passwords with bcrypt or similar
+- Validate and sanitize all user inputs using libraries like `validators` or custom validation
+- Use secure random generators for tokens: `secrets` module instead of `random`
+- Hash passwords with bcrypt, Argon2, or similar: `bcrypt.hashpw(password.encode(), bcrypt.gensalt())`
+- Use `urllib.parse` for URL parsing and validation
+- Implement proper input length limits to prevent buffer overflow attacks
+- Use `html.escape()` when displaying user-generated content to prevent XSS
+- Regularly update dependencies and scan for vulnerabilities with tools like `safety` or `pip-audit`
+- Use `defusedxml` instead of standard XML libraries to prevent XXE attacks
 
 **Why:** Prevents security vulnerabilities and data breaches.
 
@@ -241,26 +255,57 @@ Write efficient code that minimizes resource consumption.
 
 ---
 
-## Rule 10: Dependency and Execution Best Practices
+## Rule 10: Asynchronous Programming Patterns (asyncio)
+
+Use appropriate patterns for handling asynchronous operations efficiently.
+
+❌ **Forbidden:**
+
+- Blocking the event loop with synchronous operations
+- Using `threading` or `multiprocessing` when asyncio would be more appropriate
+- Mixing synchronous and asynchronous code without proper bridges
+- Forgetting to await coroutines
+
+✅ **Required:**
+
+- Use `async`/`await` syntax for asynchronous operations: `async def fetch_data():`
+- Proper error handling with try/catch in async functions
+- Use `asyncio.gather()` for concurrent operations: `await asyncio.gather(task1, task2)`
+- Use `asyncio.create_task()` to schedule concurrent tasks
+- Use `asyncio.timeout()` (Python 3.11+) or `asyncio.wait_for()` for timeouts
+- Implement proper cleanup with async context managers: `async with`
+- Avoid `asyncio.run()` in libraries; reserve for main entry points
+- Use `asyncio.sleep()` instead of `time.sleep()` in async functions
+
+**Why:** Proper async handling prevents blocking and improves performance for I/O-bound operations.
+
+---
+
+## Rule 11: Dependency and Execution Best Practices
 
 Always use modern, reproducible dependency management and execution patterns.
 
 ❌ **Forbidden:**
 
-- Using `pip install` directly
-- Running Python scripts with `python script.py`
-- Using `pip` for project dependencies
+- Using `pip install` directly in projects
+- Running Python scripts with `python script.py` without proper environment
+- Using `pip` for project dependencies (in favor of modern tools)
 - Direct execution without proper environment isolation
+- Committing `requirements.txt` when using modern tools like Poetry or uv
 
 ✅ **Required:**
 
-- Always use `uv` for dependency management (not pip)
-- Always use `uv run` to execute Python scripts and commands
-- For ad-hoc Python execution, use `uv run python -c "your code"`
+- Use `uv` for fast dependency management and execution (recommended)
+- Use `Poetry` or `PDM` for project dependency management with lock files
+- Always use `uv run` or `poetry run` to execute Python scripts and commands
+- For ad-hoc Python execution, use `uv run python -c "your code"` or `poetry run python -c "your code"`
 - Use virtual environments for project isolation
-- Pin dependencies in `requirements.txt` or `pyproject.toml`
+- Use `pyproject.toml` for project configuration and dependency specifications
+- Pin dependencies in lock files (`uv.lock`, `poetry.lock`, or `pdm.lock`)
+- Scan dependencies for security vulnerabilities with `pip-audit`, `safety`, or similar tools
+- Use `uv pip compile` or `poetry export` to generate requirements files for deployment
 
-**Why:** Using `uv` ensures consistent, fast, and reproducible environments across all development machines and CI/CD pipelines.
+**Why:** Modern tools like `uv`, `Poetry`, and `PDM` ensure consistent, fast, and reproducible environments across all development machines and CI/CD pipelines.
 
 ---
 

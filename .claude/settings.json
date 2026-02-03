@@ -8,15 +8,30 @@
       "tsx",
       "java",
       "cpp",
-      "md",
-      "sh"
+      "go",
+      "cs",
+      "php",
+      "rb",
+      "swift",
+      "kt",
+      "rs",
+      "dart"
     ],
     "rulesFile": "./plugins/code-review/rules.md",
     "languageSpecificRules": {
       "python": "./plugins/code-review/rules/python-rules.md",
       "javascript": "./plugins/code-review/rules/javascript-rules.md",
       "typescript": "./plugins/code-review/rules/typescript-rules.md",
-      "java": "./plugins/code-review/rules/java-rules.md"
+      "java": "./plugins/code-review/rules/java-rules.md",
+      "go": "./plugins/code-review/rules/go-rules.md",
+      "csharp": "./plugins/code-review/rules/csharp-rules.md",
+      "cpp": "./plugins/code-review/rules/cpp-rules.md",
+      "php": "./plugins/code-review/rules/php-rules.md",
+      "ruby": "./plugins/code-review/rules/ruby-rules.md",
+      "swift": "./plugins/code-review/rules/swift-rules.md",
+      "kotlin": "./plugins/code-review/rules/kotlin-rules.md",
+      "rust": "./plugins/code-review/rules/rust-rules.md",
+      "dart": "./plugins/code-review/rules/dart-rules.md"
     }
   }
 }

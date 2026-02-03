@@ -57,6 +57,7 @@ Leverage modern JavaScript features to write cleaner, more maintainable code.
 - Using function declarations when arrow functions are more appropriate for concise expressions
 - Using `for` loops when `forEach`, `map`, `filter`, `reduce` are more expressive
 - Using `for...in` for arrays (use `for...of` instead)
+- Using outdated methods when newer, more efficient ones are available
 
 ✅ **Required:**
 
@@ -68,6 +69,12 @@ Leverage modern JavaScript features to write cleaner, more maintainable code.
 - Use default parameters: `function greet(name = 'World')`
 - Use rest parameters: `function sum(...numbers)`
 - Use object shorthand: `{name}` instead of `{name: name}`
+- Use optional chaining: `user?.address?.street`
+- Use nullish coalescing: `value ?? defaultValue`
+- Use `Promise.allSettled()` when you need all results regardless of success/failure
+- Use `Array.from()` for creating arrays from array-like objects
+- Use `Object.hasOwn()` instead of `Object.prototype.hasOwnProperty.call()`
+- Consider upcoming ES2024+ features when available in target environments
 
 **Why:** Modern features lead to more readable and maintainable code.
 
@@ -148,15 +155,22 @@ Implement secure coding practices to prevent vulnerabilities.
 - Including untrusted data directly in DOM (XSS risk)
 - Using insecure HTTP instead of HTTPS for sensitive operations
 - Storing sensitive data in localStorage/sessionStorage
+- Using inline event handlers in HTML
+- Constructing URLs with user input without validation
 
 ✅ **Required:**
 
 - Sanitize user input before using in DOM or executing
 - Use template literals safely: validate interpolated values
-- Escape HTML content when inserting into DOM
-- Use Content Security Policy (CSP) headers
+- Escape HTML content when inserting into DOM using libraries like DOMPurify
+- Use Content Security Policy (CSP) headers to prevent XSS
 - Store sensitive data securely (HTTP-only cookies, encrypted storage)
 - Validate and sanitize all inputs on the server side
+- Use `encodeURIComponent()` when constructing URLs with dynamic values
+- Implement proper authentication and authorization checks
+- Use secure random generators for tokens and session IDs
+- Apply input validation and length limits to prevent buffer overflow attacks
+- Use `fetch()` with appropriate security headers instead of older XMLHttpRequest
 
 **Why:** Prevents security vulnerabilities and protects user data.
 
@@ -208,7 +222,38 @@ Write efficient code that minimizes resource consumption.
 
 ---
 
-## Rule 10: Code Quality and Maintainability
+## Rule 10: Performance Optimization
+
+Write efficient code that minimizes resource consumption.
+
+❌ **Forbidden:**
+
+- Heavy computations in render methods or loops
+- Creating functions in render (in React)
+- Memory leaks from unsubscribed event listeners or intervals
+- Blocking the main thread with synchronous operations
+- Frequent DOM manipulation in loops
+- Unoptimized API calls without caching or debouncing
+
+✅ **Required:**
+
+- Use memoization: `useMemo`, `useCallback` in React
+- Debounce/throttle expensive operations
+- Use virtualization for large lists
+- Implement lazy loading for non-critical resources
+- Optimize bundle size by tree-shaking unused code
+- Use efficient algorithms and data structures
+- Minimize DOM access and manipulation
+- Use `requestAnimationFrame()` for animations instead of `setInterval()`
+- Use `DocumentFragment` for multiple DOM insertions
+- Implement proper cleanup for event listeners and timers
+- Use `IntersectionObserver` for scroll-based effects
+
+**Why:** Efficient code provides better user experience and scales better.
+
+---
+
+## Rule 11: Code Quality and Maintainability
 
 Write code that is easy to understand, test, and maintain.
 

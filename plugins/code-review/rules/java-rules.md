@@ -212,6 +212,7 @@ Leverage modern Java features for cleaner, more efficient code.
 - Using old iteration patterns when streams are more appropriate
 - Verbose anonymous classes when lambda expressions are cleaner
 - Manual null checks when Optional is more expressive
+- Using traditional blocking I/O when non-blocking alternatives are available
 
 ✅ **Required:**
 
@@ -222,6 +223,14 @@ Leverage modern Java features for cleaner, more efficient code.
 - Use `var` for local variable type inference when it improves readability
 - Use records for simple data carriers
 - Use sealed classes for restricted hierarchies
+- Use pattern matching for `instanceof` (Java 16+): `if (obj instanceof String str)`
+- Use switch expressions (Java 14+): `switch (day) { case MONDAY -> "weekday"; }`
+- Use text blocks for multi-line strings (Java 15+)
+- Use records with sealed classes for algebraic data types
+- Use `yield` statement in switch expressions
+- Consider structured concurrency (Java 25+ preview) for managing related tasks
+- Use lazy constants (Java 25+ preview) for expensive initialization
+- Leverage primitive types in patterns (Java 26+ preview) for better performance
 
 **Why:** Modern features lead to more readable and maintainable code.
 
@@ -237,24 +246,34 @@ Implement secure coding practices to prevent vulnerabilities.
 - Using insecure deserialization (ObjectInputStream)
 - Building SQL queries with string concatenation (SQL injection risk)
 - Trusting user input without validation
+- Using weak cryptographic algorithms (MD5, SHA-1)
+- Exposing internal stack traces to clients
+- Using deprecated security APIs
 
 ✅ **Required:**
 
-- Store sensitive data in environment variables or secure vaults
+- Store sensitive data in environment variables, secure vaults, or use libraries like Spring Vault
 - Use parameterized queries or prepared statements
-- Validate and sanitize all user inputs
+- Validate and sanitize all user inputs using validation frameworks
 - Use HTTPS for network communications
-- Implement proper authentication and authorization
-- Use secure random number generators
-- Encode output to prevent XSS attacks
+- Implement proper authentication and authorization (JWT, OAuth2, etc.)
+- Use secure random number generators: `SecureRandom` instead of `Random`
+- Encode output to prevent XSS attacks: use frameworks that auto-escape
+- Apply principle of least privilege for permissions and access controls
+- Use modern cryptographic algorithms (AES, SHA-256, BCrypt for passwords)
+- Implement proper session management and timeout
+- Apply security headers (CSRF, XSS protection, HSTS, etc.)
+- Use dependency checking tools like OWASP Dependency Check to identify vulnerable libraries
+- Implement secure deserialization with allowlists for classes
+- Apply input length limits to prevent buffer overflow attacks
 
 **Why:** Prevents security vulnerabilities and protects sensitive data.
 
 ---
 
-## Rule 9: Performance and Memory Management
+## Rule 9: JVM Performance and Memory Management
 
-Write efficient code considering JVM characteristics.
+Write efficient code considering JVM characteristics and modern optimization techniques.
 
 ❌ **Forbidden:**
 
@@ -262,17 +281,52 @@ Write efficient code considering JVM characteristics.
 - Using `String` concatenation in loops (use `StringBuilder`)
 - Holding references to objects preventing garbage collection
 - Synchronization bottlenecks
+- Using inefficient collection types for the access patterns
+- Ignoring memory leak prevention
 
 ✅ **Required:**
 
 - Use StringBuilder for string concatenation in loops
 - Consider object pooling for expensive objects
-- Use primitive collections when appropriate to avoid boxing overhead
+- Use primitive collections (like Eclipse Collections or Trove) when appropriate to avoid boxing overhead
 - Choose appropriate collection types based on usage patterns
-- Profile memory usage to identify bottlenecks
+- Profile memory usage to identify bottlenecks using tools like JFR or VisualVM
 - Use weak references when appropriate to prevent memory leaks
+- Consider container-aware JVM settings for cloud deployments
+- Use efficient stream operations and avoid intermediate operations when possible
+- Apply proper GC tuning based on application characteristics (G1GC, ZGC, etc.)
+- Use `String.join()` for joining multiple strings instead of concatenation
+- Consider using `String.format()` only when necessary, prefer concatenation for simple cases
+- Use primitive specialization when available (e.g., `IntStream`, `LongStream`)
 
 **Why:** Efficient code provides better performance and uses system resources wisely.
+
+---
+
+## Rule 12: Performance and Memory Management
+
+Consider JVM-specific performance optimizations and container-aware configurations.
+
+❌ **Forbidden:**
+
+- Ignoring JVM container awareness in cloud environments
+- Using inappropriate garbage collector for application patterns
+- Overlooking native memory usage optimization
+- Disregarding JIT compiler optimizations
+
+✅ **Required:**
+
+- Configure JVM for container environments: `-XX:+UseContainerSupport` (default in newer JDKs)
+- Choose appropriate GC algorithm based on application requirements (G1GC for balanced, ZGC for low-latency)
+- Monitor and tune heap size appropriately for container limits
+- Consider using GraalVM native images for faster startup and lower memory usage in microservices
+- Apply JVM flags for container-aware memory management: `-XX:MaxRAMPercentage`, `-XX:InitialRAMPercentage`
+- Profile applications using JFR (Java Flight Recorder) for production optimization
+- Use efficient serialization libraries (Jackson, Gson) with proper configuration
+- Consider using virtual threads (Project Loom) for I/O-bound operations when available
+- Apply proper monitoring and observability for performance troubleshooting
+
+**Why:** JVM-specific optimizations ensure optimal performance in various deployment environments.
 
 ---
 
