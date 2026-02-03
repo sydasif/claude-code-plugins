@@ -18,12 +18,16 @@ timestamp() {
   date -u +"%Y-%m-%dT%H:%M:%SZ"
 }
 
+get_project_root() {
+  git rev-parse --show-toplevel 2>/dev/null || pwd
+}
+
 log_event() {
   local session_id="$1"
   local event_type="$2"
   shift 2
 
-  local log_dir=".claude/code-review"
+  local log_dir="$(get_project_root)/.claude/code-review"
   mkdir -p "$log_dir"
   local log_file="${log_dir}/event-log.jsonl"
   touch "$log_file"
@@ -60,7 +64,7 @@ log_event() {
 
 has_new_files() {
   local session_id="$1"
-  local log_file=".claude/code-review/event-log.jsonl"
+  local log_file="$(get_project_root)/.claude/code-review/event-log.jsonl"
 
   [[ ! -f "$log_file" ]] && return 1
 
@@ -89,7 +93,7 @@ has_new_files() {
 
 get_modified_files() {
   local session_id="$1"
-  local log_file=".claude/code-review/event-log.jsonl"
+  local log_file="$(get_project_root)/.claude/code-review/event-log.jsonl"
 
   [[ ! -f "$log_file" ]] && echo "[]" && return
 
