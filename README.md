@@ -28,11 +28,12 @@ Empower your AI assistant to enforce your project's coding standards. This plugi
 Install directly from the Claude Code marketplace:
 
 ```bash
-/plugin marketplace add sydasif/claude-code-review
+/plugin marketplace add sydasif/claude-code-plugins
 /plugin install code-review@sydasif-claude-plugins
 ```
 
 **Requirements:** `jq` must be installed.
+
 - **macOS**: `brew install jq`
 - **Linux**: `sudo apt-get install jq`
 
@@ -75,11 +76,13 @@ Run reviews directly from the Claude Code prompt:
 ## 🛠️ Extending Language Support
 
 ### For Your Project Only
+
 1. Create a rules file: `plugins/code-review/rules/yourlang-rules.md`
 2. Add the extension to `fileExtensions` in `.claude/settings.json`
 3. Add the mapping to `languageSpecificRules`
 
 ### Contributing to the Plugin
+
 We welcome contributions! To add official support for a new language:
 
 1. **Fork** the repository: `git clone https://github.com/YOUR_USERNAME/claude-code-review.git`
