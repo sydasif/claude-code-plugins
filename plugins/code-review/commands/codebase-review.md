@@ -1,5 +1,5 @@
 ---
-name: full-review
+name: codebase-review
 description: Run full codebase review using *code-reviewer* agent with project-specific rules
 ---
 

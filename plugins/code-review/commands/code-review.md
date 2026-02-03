@@ -1,5 +1,5 @@
 ---
-name: review
+name: code-review
 Description: Trigger a semantic code review on modified files against project-specific rules.
 ---
 
