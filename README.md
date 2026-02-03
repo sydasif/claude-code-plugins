@@ -172,6 +172,59 @@ This tool complements, rather than replaces, traditional static analysis:
 2. Use **Mypy** or **Rust** type checker for type checking
 3. Use this **Code Review Plugin** for semantic rules (e.g., "Docstrings must explain *why*, not just *what*", or "Variable names must be domain-specific")
 
+## Adding New Languages
+
+This plugin is focused on supporting the top programming languages of 2025. To add support for additional languages:
+
+### For Your Project Only
+
+1. **Create a rules file** in your project's rules directory (e.g., `plugins/code-review/rules/yourlang-rules.md`)
+2. **Update `.claude/settings.json`**:
+
+```json
+{
+  "codeReview": {
+    "enabled": true,
+    "fileExtensions": ["py", "js", "go", "rs", "cs", "yourlang"],
+    "rulesFile": "./plugins/code-review/rules.md",
+    "languageSpecificRules": {
+      "python": "./plugins/code-review/rules/python-rules.md",
+      "javascript": "./plugins/code-review/rules/javascript-rules.md",
+      "go": "./plugins/code-review/rules/go-rules.md",
+      "rust": "./plugins/code-review/rules/rust-rules.md",
+      "csharp": "./plugins/code-review/rules/csharp-rules.md",
+      "yourlang": "./plugins/code-review/rules/yourlang-rules.md"
+    }
+  }
+}
+```
+
+### Contributing to the Plugin
+
+To add new language support to the plugin itself:
+
+1. **Fork the repository**:
+
+```bash
+# Fork on GitHub, then clone your fork
+git clone https://github.com/YOUR_USERNAME/claude-code-review.git
+cd claude-code-review
+```
+
+2. **Add language support**:
+
+   - Create `plugins/code-review/rules/yourlang-rules.md`
+   - Update `plugins/code-review/hooks/tools/code-review-plugin.sh`:
+     - Add the file extension to `fileExtensions` array
+     - Add the rules file path variable
+     - Add to `languageSpecificRules` JSON object
+     - Add mapping in `get_language_from_extension()` function
+   - Update `plugins/code-review/agents/code-reviewer.md` with the new language mapping
+   - Update this README.md with the new language in the supported list
+   - Test changes with `bash -n plugins/code-review/hooks/tools/code-review-plugin.sh`
+
+3. **Submit a pull request** with your changes
+
 ## Contributing
 
 Feedback and contributions are welcome! Please open an issue or pull request on the GitHub repository.
