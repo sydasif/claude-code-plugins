@@ -1,6 +1,6 @@
 ---
 name: go-rules
-description: Go Code Review Rules
+description: Go-specific code review rules to ensure best practices.
 user-invocable: false
 ---
 

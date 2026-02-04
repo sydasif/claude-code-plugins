@@ -1,6 +1,6 @@
 ---
 name: python-rules
-description: Python Code Review Rules
+description: Python-specific code review rules to ensure best practices.
 user-invocable: false
 ---
 

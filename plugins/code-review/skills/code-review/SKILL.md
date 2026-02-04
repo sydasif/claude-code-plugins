@@ -1,6 +1,8 @@
 ---
 name: code-review
-description: Review modified files since the last commit
+description: Review modified files in the repository since the last commit.
+context: fork
+agent: code-reviewer
 ---
 
 Review the following files modified since the last commit:

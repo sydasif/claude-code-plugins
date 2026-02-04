@@ -1,6 +1,6 @@
 ---
 name: default-rules
-description: Default Code Review Rules
+description: Default code review rules for general use when no language-specific rules are defined.
 user-invocable: false
 ---
 
