@@ -1,6 +1,7 @@
 ---
 name: python-rules
 description: Python Code Review Rules
+user-invocable: false
 ---
 
 # Python Code Review Rules

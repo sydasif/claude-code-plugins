@@ -1,6 +1,7 @@
 ---
 name: default-rules
 description: Default Code Review Rules
+user-invocable: false
 ---
 
 # Default Code Review Rules

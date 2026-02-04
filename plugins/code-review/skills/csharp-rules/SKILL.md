@@ -1,6 +1,7 @@
 ---
 name: csharp-rules
 description: C# Code Review Rules
+user-invocable: false
 ---
 
 # C# Code Review Rules

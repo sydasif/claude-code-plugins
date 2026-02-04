@@ -1,6 +1,7 @@
 ---
 name: go-rules
 description: Go Code Review Rules
+user-invocable: false
 ---
 
 # Go Code Review Rules

@@ -1,6 +1,7 @@
 ---
 name: javascript-rules
 description: JavaScript Code Review Rules
+user-invocable: false
 ---
 
 # JavaScript Code Review Rules
