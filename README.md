@@ -48,9 +48,9 @@ Install directly from the Claude Code marketplace:
 Run reviews directly from the Claude Code prompt:
 
 | Command | Description |
-|---------|-------------|
+| --------- | ------------- |
 | `/review` | Review only files modified since the last review. |
-| `/codebase-review` | perform a full review of the entire codebase. |
+| `/codebase-review` | Perform a full review of the entire codebase. |
 
 ---
 
