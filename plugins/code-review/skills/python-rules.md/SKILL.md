@@ -1,3 +1,8 @@
+---
+name: python-rules
+description: Python Code Review Rules
+---
+
 # Python Code Review Rules
 
 These are Python-specific code review rules. Follow these guidelines to maintain high-quality Python code.
