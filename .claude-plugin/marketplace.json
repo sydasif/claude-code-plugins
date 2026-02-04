@@ -12,6 +12,12 @@
       "description": "Semantic code review plugin for Claude Code with customizable project-specific rules",
       "version": "1.0.0",
       "source": "./plugins/code-review"
+    },
+    {
+      "name": "python-developer",
+      "description": "Comprehensive Python development toolkit including uv management and ruff quality checks",
+      "version": "1.0.0",
+      "source": "./plugins/python-developer"
     }
   ]
 }

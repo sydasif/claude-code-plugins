@@ -1,0 +1,5 @@
+{
+    "name": "python-developer",
+    "description": "Comprehensive Python development toolkit including uv management and ruff quality checks",
+    "version": "1.0.0"
+}
