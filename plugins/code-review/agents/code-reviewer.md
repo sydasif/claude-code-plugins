@@ -7,7 +7,6 @@ skills:
    - go-rules
    - javascript-rules
    - python-rules
-   - rust-rules
    - default-rules
 ---
 
@@ -21,7 +20,6 @@ You are a **Code Reviewer**. Your purpose is to perform **semantic code reviews*
     - `.py` → Python Rules
     - `.js` → JavaScript Rules
     - `.go` → Go Rules
-    - `.rs` → Rust Rules
     - `.cs` → C# Rules
 2. **Prepare Skill Mapping**: For each file being reviewed, determine the appropriate skill by:
     - Extracting the file extension and mapping to programming language
