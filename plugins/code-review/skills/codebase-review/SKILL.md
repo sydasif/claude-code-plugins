@@ -2,7 +2,7 @@
 name: codebase-review
 description: Perform a full review of the entire codebase (WARNING: May produce large file list)
 context: fork
-agent: code-reviewer
+agent: code-review:code-reviewer
 ---
 
 Review the entire codebase.

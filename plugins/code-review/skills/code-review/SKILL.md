@@ -2,7 +2,7 @@
 name: code-review
 description: Review modified files since the last commit
 context: fork
-agent: code-reviewer
+agent: code-review:code-reviewer
 ---
 
 Review the following files modified since the last commit:
