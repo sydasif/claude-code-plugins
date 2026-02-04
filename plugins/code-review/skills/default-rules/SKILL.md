@@ -1,3 +1,8 @@
+---
+name: default-rules
+description: Default Code Review Rules
+---
+
 # Default Code Review Rules
 
 These are sensible defaults for semantic code review. Copy this file to your project and customize as needed. This serves as the fallback when language-specific rules are not configured.
@@ -28,3 +33,6 @@ Provide feedback organized by priority:
 - Suggestions (consider improving)
 
 Include specific examples of how to fix issues.
+
+- Reference best practices and style guides
+- Suggest relevant tools or libraries if applicable
