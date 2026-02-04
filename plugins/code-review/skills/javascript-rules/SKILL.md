@@ -1,3 +1,8 @@
+---
+name: javascript-rules
+description: JavaScript Code Review Rules
+---
+
 # JavaScript Code Review Rules
 
 These are JavaScript-specific code review rules. Follow these guidelines to maintain high-quality JavaScript code.
@@ -353,4 +358,3 @@ Violations:
 ✅ PASS
 
 File meets all semantic requirements.
-```

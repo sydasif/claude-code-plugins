@@ -1,3 +1,8 @@
+---
+name: csharp-rules
+description: C# Code Review Rules
+---
+
 # C# Code Review Rules
 
 These are C#-specific code review rules. Follow these guidelines to maintain high-quality C# code.

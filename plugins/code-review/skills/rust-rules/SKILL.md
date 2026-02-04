@@ -1,3 +1,8 @@
+---
+name: rust-rules
+description: Rust Code Review Rules
+---
+
 # Rust Code Review Rules
 
 These are Rust-specific code review rules. Follow these guidelines to maintain high-quality Rust code.
@@ -463,4 +468,3 @@ Violations:
 ✅ PASS
 
 File meets all semantic requirements.
-```

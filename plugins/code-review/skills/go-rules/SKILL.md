@@ -1,3 +1,8 @@
+---
+name: go-rules
+description: Go Code Review Rules
+---
+
 # Go Code Review Rules
 
 These are Go-specific code review rules. Follow these guidelines to maintain high-quality Go code.
@@ -56,7 +61,7 @@ Handle errors appropriately following Go best practices.
 ✅ **Required:**
 
 - Handle all errors explicitly: `if err != nil { return err }`
-- Wrap errors with context using `fmt.Errorf(": %w")` for error wrapping
+- Wrap errors with context using `fmt.Errorf("%w")` for error wrapping
 - Use `errors.Is()` and `errors.As()` for error comparison
 - Return descriptive error messages
 - Use error types for complex error handling scenarios
@@ -328,4 +333,3 @@ Violations:
 ✅ PASS
 
 File meets all semantic requirements.
-```
