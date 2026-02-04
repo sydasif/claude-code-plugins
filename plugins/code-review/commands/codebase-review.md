@@ -1,11 +1,11 @@
 ---
 name: codebase-review
-description: Run full codebase review using *code-reviewer* agent with project-specific rules
+description: Run codebase review with project-specific skills
 ---
 
 # Full Codebase Review
 
-Review the entire codebase against `${CLAUDE_PLUGIN_ROOT}/rules/` using the `code-reviewer` subagent.
+Review the entire codebase against `${CLAUDE_PLUGIN_ROOT}/skills/` using the `code-reviewer` subagent.
 
 ## Procedure
 
@@ -78,8 +78,8 @@ Use Task tool with:
 **Important:** The code-reviewer will:
 
 1. Read `.claude/settings.json` to get the configuration
-2. For each file, determine the appropriate rules file based on the file extension and language-specific rules configuration
-3. Apply the appropriate language-specific rules to each file
+2. For each file, determine the appropriate skill based on the file extension and language-specific configuration
+3. Apply the appropriate language-specific skill to each file
 4. Return findings in structured format
 
 Collect ALL findings from each chunk.
@@ -133,7 +133,7 @@ Always display a summary to the user:
 ## Error Handling
 
 - If no files found: Report "No matching files found for extensions [ext1, ext2, ...]" and exit
-- If rules file not found: Warn but continue with basic review (code-reviewer agent handles this)
+- If skill not found: Warn but continue with basic review (code-reviewer agent handles this)
 - If chunk review fails: Log error, continue with remaining chunks
 - If `gh` not installed: Warn and skip issue creation
 - If `.claude/settings.json` not found: Use default extensions ["py", "js", "go", "rs", "cs"]
@@ -141,7 +141,7 @@ Always display a summary to the user:
 ## Notes
 
 - This reuses the existing `code-reviewer` agent from this plugin
-- Uses language-specific rules based on file extensions and configuration in `.claude/settings.json`.
-- Ensuring appropriate rules are applied to each file type
+- Uses language-specific skills based on file extensions and configuration in `.claude/settings.json`.
+- Ensuring appropriate skills are applied to each file type
 - Respects `fileExtensions` configuration from `.claude/settings.json`
 - Supports any programming language configured in `fileExtensions` (Python, JavaScript, Go, Rust, C#)

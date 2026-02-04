@@ -1,11 +1,11 @@
 ---
 name: code-review
-Description: Trigger a semantic code review on modified files against project-specific rules.
+Description: Trigger a semantic code review on modified files against project-specific skills.
 ---
 
 # Code Review of Modified Files
 
-Trigger a semantic code review on modified files against project-specific rules defined in `${CLAUDE_PLUGIN_ROOT}/rules/`.
+Trigger a semantic code review on modified files against project-specific skills defined in `${CLAUDE_PLUGIN_ROOT}/skills/`.
 
 1. **Identify Modified Files**: Use `git diff` to find changed files since the last commit or a specific reference point:
 
