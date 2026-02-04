@@ -16,16 +16,18 @@ Collection of Claude Code plugins that empower your AI assistant to enforce codi
 ## ⚡ Features
 
 ### 📋 Code Review Plugin
+
 - **Semantic Analysis**: Goes beyond linting to check for logic, safety, and design patterns.
- - **Multi-Language Support**: First-class support for the top languages of `2025`:
-   - **Python** (`.py`)
-   - **JavaScript** (`.js`)
-   - **Go** (`.go`)
+- **Multi-Language Support**: First-class support for the top languages of `2025`:
+  - **Python** (`.py`)
+  - **JavaScript** (`.js`)
+  - **Go** (`.go`)
 
 - **Incremental Reviews**: Only reviews files modified since the last review cycle.
 - **Fully Customizable**: Define your own rules or extend support to any language.
 
 ### 🐍 Python Developer Plugin
+
 - **Modern Python Development**: Comprehensive toolkit for Python development using `uv`, `ruff`, and `mypy`.
 - **Automated Quality Assurance**: Hooks that automatically format and lint code after changes.
 - **Testing Excellence**: Dedicated test engineer agent with modern testing practices.
@@ -48,25 +50,11 @@ Install directly from the Claude Code marketplace:
 
 ---
 
-## 🚀 Usage
-
-Run commands directly from the Claude Code prompt:
-
- | Command | Description |
- | --------- | ------------- |
- | `/review` | Review only files modified since the last review. |
- | `/python-expert` | Specialized Python development guidance with modern best practices. |
- | `/test-engineer` | Focused testing expertise with coverage and best practices. |
- | `/py-init` | Scaffold a new Python project with modern tooling and best practices. |
-
----
-
 ## 🏗️ Architecture
 
 - **Agents**: Specialized agents (`code-reviewer`, `python-expert`, `test-engineer`) for focused expertise.
 - **Skills**: Language-specific and task-specific skill modules encapsulate domain knowledge.
 - **Hooks**: Automated quality assurance that enforces standards on file changes.
-- **Commands**: Custom slash commands expose functionality to the user.
 
 ---
 
