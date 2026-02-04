@@ -11,6 +11,7 @@ This skill provides comprehensive Python package management using `uv`, the mode
 ## Available Commands
 
 ### Add Dependencies
+
 ```bash
 uv add package-name
 # Add specific version
@@ -20,6 +21,7 @@ uv add package-name[extra1,extra2]
 ```
 
 ### Add Development Dependencies
+
 ```bash
 uv add --dev package-name
 # Add multiple dev packages
@@ -27,6 +29,7 @@ uv add --dev pytest ruff mypy
 ```
 
 ### Remove Dependencies
+
 ```bash
 uv remove package-name
 # Remove with extras
@@ -34,6 +37,7 @@ uv remove package-name[extra1]
 ```
 
 ### Update Dependencies
+
 ```bash
 uv add package-name --upgrade
 # Update all packages
@@ -41,6 +45,7 @@ uv sync --reinstall
 ```
 
 ### Install from Lock File
+
 ```bash
 uv sync
 # Sync with specific Python version
@@ -48,6 +53,7 @@ uv sync --python 3.12
 ```
 
 ### List Dependencies
+
 ```bash
 uv pip list
 # List outdated packages
@@ -57,12 +63,14 @@ uv pip list --outdated
 ## pyproject.toml Management
 
 ### Create New pyproject.toml
+
 ```bash
 uv init my-project
 cd my-project
 ```
 
 ### Add Dependencies to pyproject.toml
+
 ```bash
 # Add runtime dependencies
 uv add requests pandas
@@ -71,6 +79,7 @@ uv add --dev pytest black mypy
 ```
 
 ### Update pyproject.toml
+
 ```bash
 # Sync lock file after manual edits
 uv lock
@@ -79,6 +88,7 @@ uv lock
 ## Environment Management
 
 ### Create Virtual Environment
+
 ```bash
 # uv automatically creates environments
 # But you can specify manually
@@ -86,6 +96,7 @@ uv venv create
 ```
 
 ### Activate Environment
+
 ```bash
 # uv manages this automatically
 # Run commands directly with uv
@@ -96,7 +107,7 @@ uv run python script.py
 
 ### Project Structure
 
-```
+```text
 project-name/
 ├── pyproject.toml
 ├── README.md
@@ -111,10 +122,12 @@ project-name/
 ### Dependency Organization
 
 **Runtime Dependencies** (in [project] section):
+
 - Core functionality
 - Required for the application to run
 
 **Development Dependencies** (in [tool] section):
+
 - Testing frameworks
 - Linters and formatters
 - Documentation tools
@@ -131,12 +144,14 @@ project-name/
 ### Common Issues
 
 **Permission Errors**:
+
 ```bash
 # Run with appropriate permissions
 uv add package-name
 ```
 
 **Network Issues**:
+
 ```bash
 # Check internet connection
 ping pypi.org
@@ -145,6 +160,7 @@ UV_INDEX_URL=https://example.com/index uv sync
 ```
 
 **Python Version Mismatches**:
+
 ```bash
 # Check Python version
 python --version
@@ -214,6 +230,7 @@ uv sync --dev
 ## Integration with Other Skills
 
 This skill integrates seamlessly with:
+
 - `code-quality` for linting and type checking
 - `python-expert` for comprehensive Python guidance
 - Custom scripts for project-specific workflows

@@ -77,6 +77,7 @@ For any testing task:
 ### Test Patterns
 
 #### Basic Unit Test
+
 ```python
 def test_addition():
     """Test basic addition."""
@@ -84,6 +85,7 @@ def test_addition():
 ```
 
 #### Parametrized Test
+
 ```python
 @pytest.mark.parametrize("a,b,expected", [
     (2, 3, 5),
@@ -96,6 +98,7 @@ def test_addition_parametrized(a, b, expected):
 ```
 
 #### Property-Based Test
+
 ```python
 from hypothesis import given, strategies as st
 
@@ -106,6 +109,7 @@ def test_addition_commutative(a, b):
 ```
 
 #### Test with Fixture
+
 ```python
 @pytest.fixture
 def calculator():
@@ -118,12 +122,13 @@ def test_calculator_initial_state(calculator):
 ```
 
 #### Mock Test
+
 ```python
 def test_save_to_database(mock_db_connection):
     """Test saving data to database."""
     service = DataService(db_conn=mock_db_connection)
     result = service.save_data({"id": 1, "name": "Test"})
-    
+
     mock_db_connection.insert.assert_called_once()
     assert result is True
 ```
@@ -133,17 +138,18 @@ def test_save_to_database(mock_db_connection):
 ## Common Testing Scenarios
 
 ### Testing Classes
+
 ```python
 class TestCalculator:
     def setup_method(self):
         """Setup for each test."""
         self.calc = Calculator()
-    
+
     def test_add(self):
         """Test addition."""
         result = self.calc.add(2, 3)
         assert result == 5
-    
+
     def test_multiply(self):
         """Test multiplication."""
         result = self.calc.multiply(3, 4)
@@ -151,6 +157,7 @@ class TestCalculator:
 ```
 
 ### Testing Async Code
+
 ```python
 import asyncio
 import pytest
@@ -160,22 +167,24 @@ async def test_async_api_call():
     """Test async API call."""
     api_client = ApiClient()
     result = await api_client.fetch_data("endpoint")
-    
+
     assert isinstance(result, dict)
     assert "data" in result
 ```
 
 ### Testing Error Conditions
+
 ```python
 def test_division_by_zero():
     """Test division by zero raises error."""
     calc = Calculator()
-    
+
     with pytest.raises(ZeroDivisionError):
         calc.divide(5, 0)
 ```
 
 ### Testing with Coverage
+
 ```bash
 # Run tests with coverage
 uv run pytest --cov=src --cov-report=html
@@ -189,6 +198,7 @@ uv run pytest --cov=src.calculator --cov-report=term-missing
 ## Integration Testing
 
 ### Database Integration Tests
+
 ```python
 @pytest.fixture(scope="session")
 def db_connection():
@@ -203,12 +213,13 @@ def test_create_user(db_connection):
     """Test creating a user in database."""
     user_service = UserService(db_connection)
     user = user_service.create_user("john@example.com", "John Doe")
-    
+
     assert user.id is not None
     assert user.email == "john@example.com"
 ```
 
 ### API Integration Tests
+
 ```python
 @pytest.fixture
 def api_client():
@@ -220,7 +231,7 @@ def api_client():
 def test_get_user_endpoint(api_client):
     """Test GET /users/{id} endpoint."""
     response = api_client.get("/users/1")
-    
+
     assert response.status_code == 200
     data = response.json()
     assert "id" in data
@@ -232,6 +243,7 @@ def test_get_user_endpoint(api_client):
 ## Performance Testing
 
 ### Benchmark Tests
+
 ```python
 import pytest_benchmark
 
@@ -239,12 +251,13 @@ def test_heavy_calculation_performance(benchmark):
     """Benchmark heavy calculation."""
     def run_calc():
         return HeavyCalculator().perform_calculation(large_dataset)
-    
+
     result = benchmark(run_calc)
     assert result is not None
 ```
 
 ### Load Testing Preparation
+
 ```python
 # Prepare test data for load testing
 @pytest.fixture
@@ -261,26 +274,28 @@ def sample_users():
 ## Security Testing
 
 ### Input Validation Tests
+
 ```python
 def test_sql_injection_prevention():
     """Test that SQL injection attempts are prevented."""
     db_service = DatabaseService()
-    
+
     malicious_input = "'; DROP TABLE users; --"
     result = db_service.get_user_by_name(malicious_input)
-    
+
     # Should handle malicious input safely
     assert result is None or isinstance(result, list) and len(result) == 0
 ```
 
 ### Authentication Tests
+
 ```python
 def test_unauthorized_access():
     """Test that unauthorized access is prevented."""
     client = TestClient(create_app())
-    
+
     response = client.get("/admin/dashboard")
-    
+
     assert response.status_code == 401  # Unauthorized
 ```
 
@@ -289,23 +304,27 @@ def test_unauthorized_access():
 ## Best Practices
 
 ### Test Naming Conventions
+
 - `test_` prefix
 - Descriptive names
 - Include expected outcome
 - Group related tests in classes
 
 ### Test Structure (AAA Pattern)
+
 1. **Arrange**: Set up test data
 2. **Act**: Execute the function
 3. **Assert**: Verify the result
 
 ### Test Isolation
+
 - Each test should be independent
 - Use fixtures for setup/teardown
 - Clean up after tests
 - Avoid shared mutable state
 
 ### Test Documentation
+
 - Document complex test scenarios
 - Explain why certain edge cases are important
 - Include references to specifications
@@ -315,6 +334,7 @@ def test_unauthorized_access():
 ## Continuous Integration
 
 ### Pre-commit Checks
+
 ```bash
 # Run tests before committing
 uv run pytest
@@ -322,6 +342,7 @@ uv run pytest --cov=src --cov-fail-under=90
 ```
 
 ### CI/CD Pipeline
+
 ```yaml
 name: Python Test Suite
 
@@ -333,27 +354,27 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.11', '3.12']
-    
+
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Install uv
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
-      
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-      
+
       - name: Install dependencies
         run: uv sync --dev
-        
+
       - name: Run type checking
         run: uv run mypy src/
-        
+
       - name: Run linting
         run: uv run ruff check src/
-        
+
       - name: Run tests with coverage
         run: uv run pytest --cov=src --cov-report=xml
 ```

@@ -11,6 +11,7 @@ This skill ensures Python code meets the highest quality standards using modern 
 ## Available Commands
 
 ### Linting with Ruff
+
 ```bash
 # Check code for issues
 uv run ruff check src/
@@ -26,6 +27,7 @@ uv run ruff check --select E,W src/
 ```
 
 ### Type Checking with MyPy
+
 ```bash
 # Run type checking
 uv run mypy src/
@@ -41,6 +43,7 @@ uv run mypy --ignore-missing-imports src/
 ```
 
 ### Formatting with Black
+
 ```bash
 # Format code
 uv run black src/
@@ -53,6 +56,7 @@ uv run black file.py
 ```
 
 ### Security Scanning with Safety
+
 ```bash
 # Scan dependencies for vulnerabilities
 uv run safety check
@@ -73,11 +77,11 @@ def process_data(
     threshold: float = 0.5
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     """Process input data and filter based on threshold.
-    
+
     Args:
         input_data: List of dictionaries to process.
         threshold: Minimum value to include in results.
-    
+
     Returns:
         Tuple of filtered data and rejected data.
     """
@@ -90,13 +94,13 @@ def process_data(
 ```python
 def fetch_user(user_id: int) -> dict[str, Any]:
     """Fetch user profile from database.
-    
+
     Args:
         user_id: Unique identifier of the user.
-    
+
     Returns:
         Dictionary containing user profile data.
-    
+
     Raises:
         ValueError: If user_id is invalid.
         ConnectionError: If database is unreachable.
@@ -209,16 +213,16 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: '3.12'
-      
+
       - name: Install dependencies
         run: uv sync
-      
+
       - name: Run linting
         run: uv run ruff check src/
-      
+
       - name: Run type checking
         run: uv run mypy src/
-      
+
       - name: Run formatting check
         run: uv run black --check src/
 ```
@@ -264,10 +268,10 @@ from typing import Union
 
 def validate_email(email: str) -> Union[str, None]:
     """Validate email address format.
-    
+
     Args:
         email: Email address to validate.
-    
+
     Returns:
         Validated email or None if invalid.
     """
@@ -285,23 +289,23 @@ from typing import List, Dict, Any
 
 def get_users_by_age(min_age: int) -> List[Dict[str, Any]]:
     """Get users older than minimum age.
-    
+
     Args:
         min_age: Minimum age to filter users.
-    
+
     Returns:
         List of user dictionaries.
     """
     conn = sqlite3.connect('users.db')
     cursor = conn.cursor()
-    
+
     # Use parameterized query to prevent SQL injection
     query = "SELECT * FROM users WHERE age > ?"
     cursor.execute(query, (min_age,))
-    
+
     results = cursor.fetchall()
     conn.close()
-    
+
     return results
 ```
 
@@ -310,6 +314,7 @@ def get_users_by_age(min_age: int) -> List[Dict[str, Any]]:
 ## Integration with Other Skills
 
 This skill works with:
+
 - `dependency-manager` to ensure quality tools are installed
 - `python-expert` for comprehensive code review
 - Custom scripts for project-specific quality rules

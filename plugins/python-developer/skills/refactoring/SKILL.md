@@ -13,6 +13,7 @@ This skill transforms legacy Python code into modern, maintainable, and efficien
 ### 1. String Formatting Modernization
 
 #### Convert .format() to f-strings
+
 ```python
 # ❌ Legacy
 name = "Alice"
@@ -28,6 +29,7 @@ result = f"{name} is {age} years old"
 ```
 
 #### Convert % formatting to f-strings
+
 ```python
 # ❌ Legacy
 name = "Bob"
@@ -43,6 +45,7 @@ result = f"Player {name} scored {score:.1f}%"
 ### 2. Path Manipulation Modernization
 
 #### Convert os.path to pathlib
+
 ```python
 # ❌ Legacy
 import os
@@ -58,6 +61,7 @@ file_exists = file_path.exists()
 ```
 
 #### Path operations with pathlib
+
 ```python
 # ❌ Legacy
 import os
@@ -75,6 +79,7 @@ if file_path.suffix == ".py":
 ### 3. Dictionary and Data Structure Modernization
 
 #### Convert dict to TypedDict for structure
+
 ```python
 # ❌ Legacy
 def process_user(user_data):
@@ -99,6 +104,7 @@ def process_user(user_data: User) -> str:
 ```
 
 #### Convert manual classes to dataclasses
+
 ```python
 # ❌ Legacy
 class Person:
@@ -106,10 +112,10 @@ class Person:
         self.name = name
         self.age = age
         self.email = email
-    
+
     def __repr__(self):
         return f"Person(name='{self.name}', age={self.age}, email='{self.email}')"
-    
+
     def __eq__(self, other):
         if not isinstance(other, Person):
             return False
@@ -128,6 +134,7 @@ class Person:
 ### 4. Function Modernization
 
 #### Convert positional args to keyword-only
+
 ```python
 # ❌ Legacy
 def create_user(name, age, active=True, admin=False):
@@ -136,7 +143,7 @@ def create_user(name, age, active=True, admin=False):
 # ✅ Modern
 def create_user(name: str, age: int, *, active: bool = True, admin: bool = False):
     """Create a new user.
-    
+
     Args:
         name: User's full name
         age: User's age
@@ -147,6 +154,7 @@ def create_user(name: str, age: int, *, active: bool = True, admin: bool = False
 ```
 
 #### Convert lambda functions to proper functions
+
 ```python
 # ❌ Legacy
 numbers = [1, 2, 3, 4, 5]
@@ -165,6 +173,7 @@ even_numbers = list(filter(is_even, numbers))
 ### 5. Loop Modernization
 
 #### Convert index-based loops to enumerate
+
 ```python
 # ❌ Legacy
 items = ["apple", "banana", "cherry"]
@@ -178,6 +187,7 @@ for i, item in enumerate(items):
 ```
 
 #### Convert manual accumulator to sum/list comprehension
+
 ```python
 # ❌ Legacy
 total = 0
@@ -202,6 +212,7 @@ positive_doubled = [num * 2 for num in numbers if num > 0]
 ### 6. Exception Handling Modernization
 
 #### Use specific exceptions and exception chaining
+
 ```python
 # ❌ Legacy
 def divide(a, b):
@@ -213,14 +224,14 @@ def divide(a, b):
 # ✅ Modern
 def divide(a: float, b: float) -> float:
     """Divide a by b.
-    
+
     Args:
         a: Dividend
         b: Divisor
-        
+
     Returns:
         The result of a / b
-        
+
     Raises:
         ZeroDivisionError: If b is zero
         TypeError: If a or b are not numeric
@@ -236,6 +247,7 @@ def divide(a: float, b: float) -> float:
 ### 7. Context Management Modernization
 
 #### Use context managers for resource management
+
 ```python
 # ❌ Legacy
 def read_file(filename):
@@ -265,6 +277,7 @@ def write_file(filename: str, content: str) -> None:
 ### 8. Import Modernization
 
 #### Group and organize imports properly
+
 ```python
 # ❌ Legacy
 import os
@@ -288,17 +301,20 @@ from mymodule import helper_function
 ## Refactoring Process
 
 ### 1. Assessment
+
 1. Identify legacy patterns in the code
 2. Prioritize refactoring based on impact and risk
 3. Check for existing tests (ensure they exist before refactoring)
 
 ### 2. Safe Refactoring Steps
+
 1. Run existing tests to establish baseline
 2. Apply one refactoring pattern at a time
 3. Run tests after each change
 4. Verify functionality remains the same
 
 ### 3. Modernization Checklist
+
 - [ ] All string formatting uses f-strings
 - [ ] Path operations use `pathlib`
 - [ ] Function signatures use type hints
@@ -313,6 +329,7 @@ from mymodule import helper_function
 ## Quality Assurance
 
 ### Before Refactoring
+
 ```bash
 # Ensure code quality tools are available
 uv run mypy src/
@@ -321,6 +338,7 @@ uv run pytest tests/
 ```
 
 ### After Refactoring
+
 ```bash
 # Verify refactored code passes all checks
 uv run mypy src/
@@ -332,6 +350,7 @@ uv run pytest --cov=src --cov-report=term-missing
 ## Common Refactoring Scenarios
 
 ### Scenario 1: Migrate to f-strings
+
 ```python
 # Find all % formatting and .format() calls
 # Replace with equivalent f-string expressions
@@ -339,6 +358,7 @@ uv run pytest --cov=src --cov-report=term-missing
 ```
 
 ### Scenario 2: Migrate to dataclasses
+
 ```python
 # Identify simple classes with only attributes
 # Add @dataclass decorator
@@ -347,6 +367,7 @@ uv run pytest --cov=src --cov-report=term-missing
 ```
 
 ### Scenario 3: Migrate to pathlib
+
 ```python
 # Identify all os.path.* usage
 # Replace with pathlib.Path equivalents
@@ -359,6 +380,7 @@ uv run pytest --cov=src --cov-report=term-missing
 ## Integration with Other Skills
 
 This skill works with:
+
 - `code-quality` to ensure refactored code meets modern standards
 - `dependency-manager` to add any new dependencies if needed
 - `test-engineer` to ensure refactored code has proper test coverage
